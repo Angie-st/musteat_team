@@ -50,7 +50,7 @@ class _MustEatListState extends State<MustEatList> {
             color: Colors.white,
           ),
           onPressed: () {
-            Get.to(() => MustEatInsert())!.then((value) => reloadData());
+            Get.to(() => MustEatInsert())!.then((value) => getJSONData());
           },
         ),
         appBar: AppBar(
