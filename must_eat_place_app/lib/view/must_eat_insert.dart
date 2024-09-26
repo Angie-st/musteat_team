@@ -1,12 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:must_eat_place_app/model/must_eat.dart';
 import 'package:must_eat_place_app/vm/database_handler.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:latlong2/latlong.dart' as latlng;
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class MustEatInsert extends StatefulWidget {
   const MustEatInsert({super.key});
@@ -17,27 +18,26 @@ class MustEatInsert extends StatefulWidget {
 
 class _MustEatInsertState extends State<MustEatInsert> {
   late DatabaseHandler handler;
-  late TextEditingController longControl;
-  late TextEditingController latContronl;
-  late TextEditingController nameControl;
-  late TextEditingController phoneControl;
-  late TextEditingController evaluControl;
+  TextEditingController longController = TextEditingController();
+  TextEditingController latController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController commentController = TextEditingController();
   XFile? imageFile;
   final ImagePicker picker = ImagePicker();
   late Position currentPosition;
   late bool canRun;
   late bool iconChanged;
   late int favorite;
+// ImangePicker에서 선택된 filename, 초기값 주기위해서
+  String image = "";
+  var now = DateTime.now();
+  double evaluate = 0;
 
   @override
   void initState() {
     super.initState();
     handler = DatabaseHandler();
-    longControl = TextEditingController();
-    latContronl = TextEditingController();
-    nameControl = TextEditingController();
-    phoneControl = TextEditingController();
-    evaluControl = TextEditingController();
     canRun = false;
     checkLocationPermission();
     getCurrentLocation();
@@ -63,8 +63,8 @@ class _MustEatInsertState extends State<MustEatInsert> {
     Position position = await Geolocator.getCurrentPosition();
     currentPosition = position;
     canRun = true;
-    latContronl.text = currentPosition.latitude.toString().substring(0, 9);
-    longControl.text = currentPosition.longitude.toString().substring(0, 9);
+    latController.text = currentPosition.latitude.toString().substring(0, 9);
+    longController.text = currentPosition.longitude.toString().substring(0, 9);
     setState(() {});
   }
 
@@ -143,7 +143,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
                                       EdgeInsets.symmetric(horizontal: 10),
                                   border: InputBorder.none,
                                   hintText: 'Restaurant Name'),
-                              controller: nameControl,
+                              controller: nameController,
                             ),
                           ),
                           Padding(
@@ -169,7 +169,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
                                 EdgeInsets.symmetric(horizontal: 10),
                             border: InputBorder.none,
                             hintText: 'Phone'),
-                        controller: phoneControl,
+                        controller: phoneController,
                       ),
                       Divider(
                         thickness: 1,
@@ -178,6 +178,24 @@ class _MustEatInsertState extends State<MustEatInsert> {
                         height: 10,
                       ),
                       addBox(),
+                      Text('${evaluate}점'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          RatingBar.builder(
+                            initialRating: 3,
+                            itemCount: 5,
+                            itemBuilder: (context, index) {
+                              return checkRating(index);
+                            },
+                            onRatingUpdate: (rating) {
+                              setState(() {
+                                evaluate = rating; // rating 값 업데이트
+                              });
+                            },
+                          ),
+                        ],
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -185,7 +203,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
                           SizedBox(
                             width: 95,
                             child: TextField(
-                              controller: latContronl,
+                              controller: latController,
                               maxLength: 9,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(counterText: ""),
@@ -197,7 +215,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
                           SizedBox(
                             width: 95,
                             child: TextField(
-                              controller: longControl,
+                              controller: longController,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(counterText: ""),
                               maxLength: 10,
@@ -249,16 +267,6 @@ class _MustEatInsertState extends State<MustEatInsert> {
     );
   }
 
-  getImageFromGallery(ImageSource) async {
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource);
-    if (pickedFile == null) {
-      return;
-    } else {
-      imageFile = XFile(pickedFile.path);
-      setState(() {});
-    }
-  }
-
   // Todo Title에 들어가는 텍스트 필드
   Widget addBox() {
     return Container(
@@ -266,7 +274,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
       decoration: BoxDecoration(
           color: Colors.amber[100], borderRadius: BorderRadius.circular(10)),
       child: TextField(
-        controller: evaluControl,
+        controller: commentController,
         maxLength: 150,
         expands: true,
         maxLines: null,
@@ -280,31 +288,90 @@ class _MustEatInsertState extends State<MustEatInsert> {
     );
   }
 
-  Future insetAction() async {
-    File imageFile1 = File(imageFile!.path);
-    Uint8List getImage = await imageFile1.readAsBytes();
+  checkRating(int index) {
+    switch (index) {
+      case 0:
+        return const Icon(
+          Icons.sentiment_very_dissatisfied,
+          color: Colors.red,
+        );
+      case 1:
+        return const Icon(
+          Icons.sentiment_dissatisfied,
+          color: Colors.redAccent,
+        );
+      case 2:
+        return const Icon(
+          Icons.sentiment_neutral,
+          color: Colors.amber,
+        );
+      case 3:
+        return const Icon(
+          Icons.sentiment_satisfied,
+          color: Colors.lightGreen,
+        );
+      case 4:
+        return const Icon(
+          Icons.sentiment_very_satisfied,
+          color: Colors.green,
+        );
+      default:
+        return const Icon(
+          Icons.sentiment_satisfied,
+          color: Colors.lightGreen,
+        );
+    }
+  }
 
-    var mustEatInsert = MustEat(
-        name: nameControl.text.trim(),
-        image: getImage,
-        phone: phoneControl.text.trim(),
-        long: double.parse(longControl.text.trim()),
-        lat: double.parse(latContronl.text.trim()),
-        evaluate: evaluControl.text.trim(),
-        favorite: favorite);
+  getImageFromGallery(ImageSource imageSource) async {
+    final XFile? pickedFile = await picker.pickImage(source: imageSource);
+    imageFile = XFile(pickedFile!.path);
+    setState(() {});
+    print(imageFile!.path); // 이미지 경로 확인
+  }
 
-    await handler.insertMustEat(mustEatInsert);
-    Get.back();
-    Get.back();
+  uploadImage() async {
+    var request = http.MultipartRequest(
+        'POST', Uri.parse('http://127.0.0.1:8000/upload'));
+    var multipartFile =
+        await http.MultipartFile.fromPath('file', imageFile!.path);
+    request.files.add(multipartFile);
+
+    // for getting file name
+    List preFileName = imageFile!.path.split('/');
+    image = preFileName[preFileName.length - 1];
+    print('upload file name: $image');
+
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      print("image uploaded successfully");
+    } else {
+      print('image upload failed');
+    }
+  }
+
+  insertJSONData() async {
+    String nowDatetime = DateFormat('yyyy-MM-dd').format(now);
+    var url = Uri.parse(
+        'http://192.168.50.123:8000/insert?name=${nameController.text}&image=$image&phone=${phoneController.text}&long=${longController.text}&lat=${latController.text}&adddate=${nowDatetime}&favorite=$favorite&lat=${commentController.text}&evaluate=$evaluate');
+    var response = await http.get(url);
+    var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataCovertedJSON['result'];
+    if (result == 'OK') {
+      print('Success');
+    } else {
+      print('Error');
+    }
   }
 
   _showDialog() {
     if (imageFile == null ||
-        nameControl.text.trim().isEmpty ||
-        phoneControl.text.trim().isEmpty ||
-        evaluControl.text.trim().isEmpty ||
-        latContronl.text.trim().isEmpty ||
-        longControl.text.trim().isEmpty) {
+        nameController.text.trim().isEmpty ||
+        phoneController.text.trim().isEmpty ||
+        commentController.text.trim().isEmpty ||
+        latController.text.trim().isEmpty ||
+        longController.text.trim().isEmpty) {
       Get.defaultDialog(
         confirm: TextButton(
             onPressed: () {
@@ -323,8 +390,9 @@ class _MustEatInsertState extends State<MustEatInsert> {
         barrierDismissible: false,
         actions: [
           TextButton(
-              onPressed: () {
-                insetAction();
+              onPressed: () async {
+                await uploadImage();
+                insertJSONData();
               },
               child: Text('OK')),
           TextButton(
