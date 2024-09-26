@@ -362,7 +362,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
   insertJSONData() async {
     String nowDatetime = DateFormat('yyyy-MM-dd').format(now);
     var url = Uri.parse(
-        'http://192.168.50.123:8000/insert?name=${nameController.text}&image=$image&phone=${phoneController.text}&long=${longController.text}&lat=${latController.text}&adddate=${nowDatetime}&favorite=$favorite&lat=${commentController.text}&evaluate=$evaluate&user_id=$userId');
+        'http://127.0.0.1:8000/insert?name=${nameController.text}&image=$image&phone=${phoneController.text}&long=${longController.text}&lat=${latController.text}&adddate=${nowDatetime}&favorite=$favorite&lat=${commentController.text}&evaluate=$evaluate&user_id=$userId');
     var response = await http.get(url);
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataCovertedJSON['result'];
