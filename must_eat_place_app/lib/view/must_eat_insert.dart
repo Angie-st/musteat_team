@@ -33,7 +33,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
 // ImangePicker에서 선택된 filename, 초기값 주기위해서
   String image = "";
   var now = DateTime.now();
-  double evaluate = 0;
+  late double evaluate;
   final box = GetStorage();
   late String userId;
 
@@ -47,6 +47,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
     iconChanged = false;
     favorite = 0;
     initStorage();
+    evaluate = 3;
   }
 
   initStorage() {
@@ -200,6 +201,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
                             onRatingUpdate: (rating) {
                               debugPrint(rating.toString());
                               evaluate = rating;
+                              setState(() {});
                             },
                           )
                         ],
@@ -239,7 +241,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
                             backgroundColor:
                                 const Color.fromARGB(255, 7, 187, 169),
                           ),
-                          onPressed: () async{
+                          onPressed: () async {
                             await uploadImage();
                             insertJSONData();
                             Get.back();
