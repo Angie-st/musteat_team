@@ -76,7 +76,7 @@ class _LoginState extends State<Login> {
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                           borderSide: BorderSide.none),
-                      fillColor: const Color.fromARGB(255, 250, 238, 201),
+                      fillColor: const Color.fromARGB(255, 253, 228, 155),
                       filled: true,
                       focusedBorder: OutlineInputBorder(
                         borderSide:
@@ -101,7 +101,7 @@ class _LoginState extends State<Login> {
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                           borderSide: BorderSide.none),
-                      fillColor: const Color.fromARGB(255, 250, 238, 201),
+                      fillColor: const Color.fromARGB(255, 253, 228, 155),
                       filled: true,
                       focusedBorder: OutlineInputBorder(
                         borderSide:
@@ -122,6 +122,8 @@ class _LoginState extends State<Login> {
                       padding: const EdgeInsets.all(15.0),
                       child: ElevatedButton(
                         onPressed: () {
+                          userIdController.text = "";
+                          passwordController.text = "";
                           Get.to(
                             () => const UserSignIn(),
                           );
@@ -203,6 +205,7 @@ class _LoginState extends State<Login> {
     Get.defaultDialog(
         title: 'Hey ${box.read('p_userID')}!',
         middleText: 'Welcome to TasteTracker',
+        middleTextStyle: TextStyle(fontSize: 17),
         backgroundColor: Colors.white,
         barrierDismissible: false,
         actions: [
