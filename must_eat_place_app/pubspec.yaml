@@ -57,6 +57,9 @@ dependencies:
   # 지도 현위치로 옮기기
   latlong2: ^0.9.1
 
+  http: ^1.2.2
+  intl: ^0.19.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
