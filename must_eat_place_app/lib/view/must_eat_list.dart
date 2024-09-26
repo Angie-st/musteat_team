@@ -27,10 +27,6 @@ class _MustEatListState extends State<MustEatList> {
   // 서버 저장 데이터
   List data = [];
 
-  iniStorage() {
-    userId = box.read('p_userID');
-  }
-
   @override
   void initState() {
     super.initState();
@@ -45,9 +41,7 @@ class _MustEatListState extends State<MustEatList> {
       const Color(0xFFB3E5FC),
     ];
     switchValue = false;
-    iniStorage();
     getJSONData();
-
     print(data);
   }
 
