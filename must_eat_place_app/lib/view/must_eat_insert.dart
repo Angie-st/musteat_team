@@ -7,6 +7,7 @@ import 'package:must_eat_place_app/vm/database_handler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class MustEatInsert extends StatefulWidget {
   const MustEatInsert({super.key});
@@ -177,6 +178,24 @@ class _MustEatInsertState extends State<MustEatInsert> {
                         height: 10,
                       ),
                       addBox(),
+                      Text('${evaluate}점'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          RatingBar.builder(
+                            initialRating: 3,
+                            itemCount: 5,
+                            itemBuilder: (context, index) {
+                              return checkRating(index);
+                            },
+                            onRatingUpdate: (rating) {
+                              setState(() {
+                                evaluate = rating; // rating 값 업데이트
+                              });
+                            },
+                          ),
+                        ],
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -267,6 +286,41 @@ class _MustEatInsertState extends State<MustEatInsert> {
         ),
       ),
     );
+  }
+
+  checkRating(int index) {
+    switch (index) {
+      case 0:
+        return const Icon(
+          Icons.sentiment_very_dissatisfied,
+          color: Colors.red,
+        );
+      case 1:
+        return const Icon(
+          Icons.sentiment_dissatisfied,
+          color: Colors.redAccent,
+        );
+      case 2:
+        return const Icon(
+          Icons.sentiment_neutral,
+          color: Colors.amber,
+        );
+      case 3:
+        return const Icon(
+          Icons.sentiment_satisfied,
+          color: Colors.lightGreen,
+        );
+      case 4:
+        return const Icon(
+          Icons.sentiment_very_satisfied,
+          color: Colors.green,
+        );
+      default:
+        return const Icon(
+          Icons.sentiment_satisfied,
+          color: Colors.lightGreen,
+        );
+    }
   }
 
   getImageFromGallery(ImageSource imageSource) async {
