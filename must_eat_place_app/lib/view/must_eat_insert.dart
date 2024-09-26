@@ -238,11 +238,8 @@ class _MustEatInsertState extends State<MustEatInsert> {
                             backgroundColor:
                                 const Color.fromARGB(255, 7, 187, 169),
                           ),
-                          onPressed: () async {
-                            await uploadImage();
-                            insertJSONData();
-                            Get.back();
-                            // _showDialog();
+                          onPressed: () {
+                            _showDialog();
                           },
                           child: Text(
                             'Add',
@@ -368,6 +365,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
               onPressed: () async {
                 await uploadImage();
                 insertJSONData();
+                Get.back();
                 Get.back();
               },
               child: Text('OK')),
