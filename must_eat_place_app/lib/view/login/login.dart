@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:must_eat_place_app/view/login/usersignin.dart';
 import 'package:must_eat_place_app/view/must_eat_list.dart';
-
-import 'usersignin.dart';
-
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -131,10 +129,14 @@ class _LoginState extends State<Login> {
     print(response.body);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
-    if(result == 1){
+    if (userIdController.text.trim().isEmpty ||
+        passwordController.text.trim().isEmpty) {
+      errorSnackBar();
+    } else if (result == 1) {
+      saveStorage();
       _showDialog();
-    }else{
-      // errorSnackBar();
+    } else {
+      errorSnackBar();
     }
   }
 
