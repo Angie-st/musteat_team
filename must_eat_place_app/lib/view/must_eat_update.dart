@@ -17,8 +17,10 @@ class MustEatUpdate extends StatefulWidget {
 }
 
 class _MustEatUpdateState extends State<MustEatUpdate> {
-  TextEditingController longControl = TextEditingController();
-  TextEditingController latControl = TextEditingController();
+
+  var value = Get.arguments ?? "-";
+  late TextEditingController longControl;
+  late TextEditingController latControl;
   TextEditingController nameControl = TextEditingController();
   TextEditingController phoneControl = TextEditingController();
   TextEditingController commentControl = TextEditingController();
@@ -33,17 +35,19 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
   late bool canRun;
   late bool iconChanged;
   late int favorite;
-  var value = Get.arguments ?? "-";
+  
   late int seq;
 // 1.seq, 2.name, 3.image, 4.phone, 5.long, 6.lat, 7.adddate, 8.favorite, 9.comment, 10.evaluate, 11.user_id
   @override
   void initState() {
     super.initState();
+    longControl = TextEditingController(text: value[4].toString());
+    latControl = TextEditingController(text: value[5].toString());
+    print(value);
+    print(longControl.text);
     nameControl.text = value[1];
     phoneControl.text = value[3];
-    longControl.text = value[4].toString();
-    latControl.text = value[5].toString();
-    commentControl.text = value[9];
+    commentControl.text = value[8];
     canRun = false;
     iconChanged = false;
     favorite = value[7];
@@ -196,6 +200,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                               var now = DateTime.now();
                               nowDatetime = DateFormat("yyyy-MM-dd").format(now);
                               updateAction(nowDatetime);
+                              setState(() {});
                             }else{
                               updateActionAll(nowDatetime);
                             }
@@ -272,7 +277,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
 
 
     updateJSONData(date) async{
-    var url = Uri.parse('http://127.0.0.1:8000/update/update?seq=${value[0]}&name=${nameControl.text}&phone=${phoneControl.text}&long=${double.parse(longControl.text)}&lat=${double.parse(latControl.text)}&adddate=${date.toString()}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
+    var url = Uri.parse('http://127.0.0.1:8000/update/update?seq=${value[0]}&name=${nameControl.text}&phone=${phoneControl.text}&adddate=${date.toString()}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -323,7 +328,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
   }
     // Image를 선택후 업데이트
     updateJSONDataAll(date) async{
-    var url = Uri.parse('http://127.0.0.1:8000/update/updateAll?seq=${value[0]}&name=${nameControl.text}&image=$filename&phone=${phoneControl.text}&long=${double.parse(longControl.text)}&lat=${double.parse(latControl.text)}&adddate=${date.toString()}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
+    var url = Uri.parse('http://127.0.0.1:8000/update/updateAll?seq=${value[0]}&name=${nameControl.text}&image=$filename&phone=${phoneControl.text}&adddate=${date.toString()}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
