@@ -1,12 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:must_eat_place_app/model/must_eat.dart';
-import 'package:must_eat_place_app/vm/database_handler.dart';
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class MustEatUpdate extends StatefulWidget {
   const MustEatUpdate({
@@ -18,51 +17,48 @@ class MustEatUpdate extends StatefulWidget {
 }
 
 class _MustEatUpdateState extends State<MustEatUpdate> {
-  late DatabaseHandler handler;
-  late TextEditingController longControl;
-  late TextEditingController latContronl;
-  late TextEditingController nameControl;
-  late TextEditingController phoneControl;
-  late TextEditingController evaluControl;
+  TextEditingController longControl = TextEditingController();
+  TextEditingController latControl = TextEditingController();
+  TextEditingController nameControl = TextEditingController();
+  TextEditingController phoneControl = TextEditingController();
+  TextEditingController commentControl = TextEditingController();
+  String nowDatetime = '';
+  double evaluate = 0;
+  // Gallery 선택 여부
+  int firstDisp = 0;
+
+  String filename = '';
   XFile? imageFile;
   final ImagePicker picker = ImagePicker();
   late bool canRun;
   late bool iconChanged;
   late int favorite;
   var value = Get.arguments ?? "-";
-  late int firstDisp;
   late int seq;
-
+// 1.seq, 2.name, 3.image, 4.phone, 5.long, 6.lat, 7.adddate, 8.favorite, 9.comment, 10.evaluate, 11.user_id
   @override
   void initState() {
     super.initState();
-    handler = DatabaseHandler();
-    longControl = TextEditingController();
-    latContronl = TextEditingController();
-    nameControl = TextEditingController();
-    phoneControl = TextEditingController();
-    evaluControl = TextEditingController();
-    nameControl.text = value[0];
-    phoneControl.text = value[2];
-    longControl.text = value[3].toString();
-    latContronl.text = value[4].toString();
-    evaluControl.text = value[5];
+    nameControl.text = value[1];
+    phoneControl.text = value[3];
+    longControl.text = value[4].toString();
+    latControl.text = value[5].toString();
+    commentControl.text = value[9];
     canRun = false;
     iconChanged = false;
-    favorite = value[6];
-    firstDisp = 0;
-    seq = value[7];
+    favorite = value[7];
+    seq = value[0];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'MustEat',
           style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Color.fromARGB(255, 254, 221, 103),
+        backgroundColor: const Color.fromARGB(255, 254, 221, 103),
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -79,8 +75,8 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                             onTap: () {
                               getImageFromGallery(ImageSource.gallery);
                             },
-                            child: Image.memory(
-                              value[1],
+                            child: Image.network(
+                              "http://127.0.0.1:8000/view/${value[2]}",
                               fit: BoxFit.cover,
                               width: double.infinity,
                               height: 250,
@@ -95,10 +91,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                             onTap: () {
                               getImageFromGallery(ImageSource.gallery);
                             },
-                            child: Image.file(
-                              File(
-                                imageFile!.path,
-                              ),
+                            child: Image.file(File(imageFile!.path,),
                               fit: BoxFit.cover,
                               width: double.infinity,
                               height: 250,
@@ -119,9 +112,9 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                             width: 300,
                             child: TextField(
                               maxLength: 18,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                   counterText: "",
                                   contentPadding:
                                       EdgeInsets.symmetric(horizontal: 10),
@@ -134,9 +127,10 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                             padding: const EdgeInsets.only(right: 15),
                             child: GestureDetector(
                                 onTap: () {
-                                  setState(() {});
+                                  favorite == 0 ? favorite = 1 : favorite = 0;
                                   iconChanged = favorite == 0;
                                   favorite = iconChanged ? 1 : 0;
+                                  setState(() {});
                                 },
                                 child: Icon(favorite == 1
                                     ? Icons.favorite
@@ -144,38 +138,38 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                           ),
                         ],
                       ),
-                      Divider(
+                      const Divider(
                         thickness: 1,
                       ),
                       TextField(
                         keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                             contentPadding:
                                 EdgeInsets.symmetric(horizontal: 10),
                             border: InputBorder.none,
                             hintText: 'Phone'),
                         controller: phoneControl,
                       ),
-                      Divider(
+                      const Divider(
                         thickness: 1,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       addBox(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Location       '),
+                          const Text('Location       '),
                           SizedBox(
                             width: 95,
                             child: TextField(
                               enabled: false,
-                              controller: latContronl,
+                              controller: latControl,
                               keyboardType: TextInputType.number,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           SizedBox(
@@ -188,7 +182,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       ElevatedButton(
@@ -197,9 +191,17 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                                 const Color.fromARGB(255, 7, 187, 169),
                           ),
                           onPressed: () {
-                            _showDialog();
+                            if(firstDisp == 0){
+                              // AddDate 추가
+                              var now = DateTime.now();
+                              nowDatetime = DateFormat("yyyy-MM-dd").format(now);
+                              updateAction(nowDatetime);
+                            }else{
+                              updateActionAll(nowDatetime);
+                            }
+                            // _showDialog();
                           },
-                          child: Text(
+                          child: const Text(
                             'Edit',
                             style: TextStyle(
                                 fontWeight: FontWeight.w600,
@@ -226,23 +228,22 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
         alignment: Alignment.centerLeft,
         child: Text(
           text,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         ),
       ),
     );
   }
 
-  Future getImageFromGallery(ImageSource imageSource) async {
-    final XFile? pickedFile = await picker.pickImage(source: imageSource);
-    if (pickedFile == null) {
-      return;
-    } else {
-      imageFile = XFile(pickedFile.path);
-      firstDisp += 1;
-      setState(() {});
-    }
-  }
+  // ---function---
 
+  // 갤러리에 있는 이미지 넣기
+  getImageFromGallery(ImageSource imageSource) async{
+    final XFile? pickerFile = await picker.pickImage(source: imageSource);
+    imageFile = XFile(pickerFile!.path);
+    firstDisp = 1;
+    setState(() {});
+    // print(imageFile!.path); // 경로 가져올때는 split을 사용해서 경로를 가져오면 된다.
+  }
   // Todo Title에 들어가는 텍스트 필드
   Widget addBox() {
     return Container(
@@ -250,11 +251,11 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
       decoration: BoxDecoration(
           color: Colors.amber[100], borderRadius: BorderRadius.circular(10)),
       child: TextField(
-        controller: evaluControl,
+        controller: commentControl,
         maxLength: 150,
         expands: true,
         maxLines: null,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           hintText: 'Restaurant Details',
           counterText: "",
           border: InputBorder.none,
@@ -264,77 +265,81 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
     );
   }
 
-  Future updateActionAll() async {
-    // File Type을 Byte Type으로 변환하기
-    File imageFile1 = File(imageFile!.path);
-    Uint8List getImage = await imageFile1.readAsBytes();
-    var mustEatInsert = MustEat(
-        name: nameControl.text.trim(),
-        image: getImage,
-        phone: phoneControl.text.trim(),
-        long: double.parse(longControl.text.trim()),
-        lat: double.parse(longControl.text.trim()),
-        evaluate: evaluControl.text.trim(),
-        favorite: favorite,
-        seq: seq);
-
-    await handler.updateMustEat(mustEatInsert);
+  updateAction(date){
+    updateJSONData(date);
   }
 
-  Future updateAction() async {
-    var mustEatInsert = MustEat(
-        name: nameControl.text.trim(),
-        image: value[1],
-        phone: phoneControl.text.trim(),
-        long: double.parse(longControl.text.trim()),
-        lat: double.parse(longControl.text.trim()),
-        evaluate: evaluControl.text.trim(),
-        favorite: favorite,
-        seq: seq);
 
-    await handler.updateMustEat(mustEatInsert);
-  }
 
-  _showDialog() {
-    if (nameControl.text.trim().isEmpty ||
-        phoneControl.text.trim().isEmpty ||
-        evaluControl.text.trim().isEmpty ||
-        latContronl.text.trim().isEmpty ||
-        longControl.text.trim().isEmpty) {
-      Get.defaultDialog(
-        confirm: TextButton(
-            onPressed: () {
-              Get.back();
-            },
-            child: Text('OK')),
-        title: 'Error',
-        middleText: 'Please complete the form',
-      );
-      return;
+    updateJSONData(date) async{
+    var url = Uri.parse('http://127.0.0.1:8000/update?seq=${value[0]}&name=${nameControl.text}&phone=${phoneControl.text}&long=${double.parse(longControl.text)}&lat=${double.parse(latControl.text)}&adddate=${date.toString()}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    if(result == 'OK'){
+      _showDialog();
+    }else{
+      errorSnackBar();
     }
-    Get.defaultDialog(
-        title: 'Edit',
-        middleText: 'Do you want to save?',
-        backgroundColor: Colors.white,
-        barrierDismissible: false,
-        actions: [
-          TextButton(
-              onPressed: () {
-                if (firstDisp == 0) {
-                  updateAction();
-                  Get.back();
-                  Get.back();
-                } else
-                  updateActionAll();
-                Get.back();
-                Get.back();
-              },
-              child: Text('OK')),
-          TextButton(
-              onPressed: () {
-                Get.back();
-              },
-              child: Text('Cancel')),
-        ]);
+  }
+
+      updateActionAll(date) async{
+    await deleteImage(value[2]);
+    await uploadImage();
+    updateJSONDataAll(date);
+  }
+  
+    // uploads에 있는 Image 삭제
+    deleteImage(String filename) async{
+    final response = await http.delete(Uri.parse('http://127.0.0.1:8000/deleteFile/$filename'));
+    if (response.statusCode == 200) {
+      print("Image deleted successfully");
+    }else {
+      print("image deletion failed.");
+    }
+  }
+
+    uploadImage() async{
+    // POST 방식
+    var request = http.MultipartRequest(
+      "POST", Uri.parse('http://127.0.0.1:8000/upload')
+    );
+    var multipartFile = await http.MultipartFile.fromPath('file', imageFile!.path);
+    request.files.add(multipartFile);
+
+    // for getting file name
+    List preFileName = imageFile!.path.split('/');
+    filename = preFileName[preFileName.length-1];
+    print("upload file name : $filename");
+
+    var response = await request.send();
+
+    // 200이면 정상적으로 들어간 것
+    if(response.statusCode == 200){
+      print("Image upload successfully");
+    } else{
+      print("Image upload failed");
+    }
+  }
+    // Image를 선택후 업데이트
+    updateJSONDataAll(date) async{
+    var url = Uri.parse('http://127.0.0.1:8000/updateAll?seq=${value[0]}&name=${nameControl.text}&image=$filename&phone=${phoneControl.text}&long=${double.parse(longControl.text)}&lat=${double.parse(latControl.text)}&adddate=${date.toString()}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    if(result == 'OK'){
+      _showDialog();
+    }else{
+      errorSnackBar();
+    }
+  }
+
+    _showDialog(){
+    print("Successfully!");
+    Get.back();
+  }
+
+  errorSnackBar(){
+    print("Error");
   }
 } //End
