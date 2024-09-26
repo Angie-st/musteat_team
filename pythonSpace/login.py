@@ -4,10 +4,10 @@ Description :
 Date        :
 Usage       :
 """
-from fastapi import FastAPI
+from fastapi import APIRouter
 import pymysql
 
-app = FastAPI()
+router = APIRouter()
 
 def connect():
     conn = pymysql.connect(
@@ -19,7 +19,7 @@ def connect():
     )
     return conn
 
-@app.get("/checkuser")
+@router.get("/checkuser")
 async def checkuser(password: str=None, id: str=None):
     print(password, id)
     conn=connect()
@@ -36,7 +36,7 @@ async def checkuser(password: str=None, id: str=None):
         print("Error",e)
         return{'result':'Error'}
 
-@app.get("/checkuserid")
+@router.get("/checkuserid")
 async def checkuser(id: str=None):
     print(id)
     conn=connect()
@@ -54,7 +54,7 @@ async def checkuser(id: str=None):
         return{'result':'Error'}
 
 
-@app.get("/insertuserid")
+@router.get("/insertuserid")
 async def insertuser(id: str=None, password: str=None, name: str=None, phone: str=None):
     conn=connect()
     curs=conn.cursor()
@@ -69,8 +69,3 @@ async def insertuser(id: str=None, password: str=None, name: str=None, phone: st
         conn.close()
         print("Error",e)
         return{'result':'Error'}
-
-
-if __name__=="__main__":
-    import uvicorn
-    uvicorn.run(app,host="127.0.0.1", port=8000)

@@ -23,7 +23,9 @@ class _UserSignInState extends State<UserSignIn> {
   late TextEditingController phoneController;
   late String checkpassword;
   late String passwordcheck;
+  late String passwordcheck2;
   late Color textColor;
+  late Color textColor2;
   late String checkID;
   late Color textIDColor;
   PasswordCheckUser passwordCheckUser = PasswordCheckUser();
@@ -38,8 +40,10 @@ class _UserSignInState extends State<UserSignIn> {
     phoneController = TextEditingController();
     checkpassword = '';
     passwordcheck = '';
+    passwordcheck2 = '';
     checkID = '';
     textColor = Colors.black;
+    textColor2 = Colors.black;
     textIDColor = Colors.black;
   }
 
@@ -80,7 +84,7 @@ class _UserSignInState extends State<UserSignIn> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          // checkUserID();
+                          checkUserID();
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFC06044)),
@@ -125,8 +129,8 @@ class _UserSignInState extends State<UserSignIn> {
               ),
             ),
             Text(
-              passwordcheck,
-              style: TextStyle(color: textColor),
+              passwordcheck2,
+              style: TextStyle(color: textColor2),
             ),
             Padding(
               padding: const EdgeInsets.all(20.0),
@@ -144,7 +148,7 @@ class _UserSignInState extends State<UserSignIn> {
             ),
             ElevatedButton(
               onPressed: () {
-                //
+                insertJSONData();
               },
               style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF748D65)),
@@ -161,44 +165,42 @@ class _UserSignInState extends State<UserSignIn> {
 
   // --- Functions ---
   insertJSONData()async{
-    var url = Uri.parse('http://127.0.0.1:8000/checkuser?id=${userIdController.text}&password=${passwordController.text}&name=${nameController.text}&phone=${phoneController.text}');
+    var url = Uri.parse('http://127.0.0.1:8000/login/insertuserid?id=${userIdController.text}&password=${passwordController.text}&name=${nameController.text}&phone=${phoneController.text}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
     if(result == 'OK'){
-      // _showDialog();
+      _showDialog('환영합니다', '회원가입이 완료 되었습니다.');
     }else{
       // errorSnackBar();
     }
   }
 
-  // checkUserID() async {
-  //   int result = await customerHandler.serchID(userIdController.text.trim());
-  //   if (result == 1) {
-  //     checkID = '아이디가 중복됩니다';
-  //     textIDColor = Colors.red;
-  //   } else {
-  //     checkID = '사용가능한 아이디 입니다.';
-  //     textIDColor = Colors.green;
-  //   }
-  //   setState(() {});
-  // }
+  checkUserJSONData()async{
+    var url = Uri.parse('http://127.0.0.1:8000/login/checkuserid?id=${userIdController.text}');
+    var response = await http.get(url);
+    print(response.body);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['result'];
+    if (result == 1) {
+      checkID = '아이디가 중복됩니다';
+      textIDColor = Colors.red;
+    } else {
+      checkID = '사용가능한 아이디 입니다.';
+      textIDColor = Colors.green;
+    }
+    setState(() {});
+  }
 
-  // addAccount() async {
-  //   int result = await customerHandler.serchID(userIdController.text.trim());
-  //   if (result == 1) {
-  //     _showDialog('아이디가 중복됩니다', '새로운 아이디를 확인해 주세요');
-  //   } else {
-  //     Account accout = Account(
-  //       id: userIdController.text.trim(),
-  //       name: nameController.text.trim(),
-  //       password: passwordController.text.trim(),
-  //       phone: phoneController.text.trim(),
-  //     );
-  //     await customerHandler.insertAccount(accout);
-  //     _showDialog('환영합니다', '회원가입이 완료 되었습니다.');
-  //   }
-  // }
+  checkUserID() async {
+    if (userIdController.text.trim().isEmpty) {
+      checkID = '사용할 아이디를 입력해 주세요';
+      textIDColor = Colors.red;
+    } else {
+      checkUserJSONData();
+    }
+    setState(() {});
+  }
 
   _showDialog(String check_user_id, String welcome_user) {
     Get.defaultDialog(
@@ -230,6 +232,7 @@ checkPassworld() {
   // 비밀번호가 유효한 경우
   if (passwordValidationMessage == null) {
     checkpassword = '확인되었습니다';
+    textColor = Colors.green;
   } else {
     checkpassword = passwordValidationMessage;
     textColor = Colors.red;
@@ -243,10 +246,11 @@ checkPassworld() {
 
   // 비밀번호 확인 메시지 설정
   if (confirmPasswordValidationMessage == null) {
-    passwordcheck = '비밀번호가 일치합니다';
-    textColor = Colors.green;
+    passwordcheck2 = '비밀번호가 일치합니다';
+    textColor2 = Colors.green;
   } else {
-    passwordcheck = confirmPasswordValidationMessage;
+    passwordcheck2 = confirmPasswordValidationMessage;
+    textColor2 = Colors.red;
   }
 
   // 상태 갱신하여 UI 업데이트

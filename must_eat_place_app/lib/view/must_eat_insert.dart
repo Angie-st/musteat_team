@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:must_eat_place_app/vm/database_handler.dart';
 import 'package:geolocator/geolocator.dart';
@@ -33,6 +34,8 @@ class _MustEatInsertState extends State<MustEatInsert> {
   String image = "";
   var now = DateTime.now();
   double evaluate = 0;
+  final box = GetStorage();
+  late String userId;
 
   @override
   void initState() {
@@ -43,6 +46,11 @@ class _MustEatInsertState extends State<MustEatInsert> {
     getCurrentLocation();
     iconChanged = false;
     favorite = 0;
+    initStorage();
+  }
+
+  initStorage() {
+    userId = box.read('p_userID') ?? "";
   }
 
   checkLocationPermission() async {
@@ -185,15 +193,15 @@ class _MustEatInsertState extends State<MustEatInsert> {
                           RatingBar.builder(
                             initialRating: 3,
                             itemCount: 5,
-                            itemBuilder: (context, index) {
-                              return checkRating(index);
-                            },
+                            itemBuilder: (context, index) => Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
                             onRatingUpdate: (rating) {
-                              setState(() {
-                                evaluate = rating; // rating 값 업데이트
-                              });
+                              debugPrint(rating.toString());
+                              evaluate = rating;
                             },
-                          ),
+                          )
                         ],
                       ),
                       Row(
@@ -231,8 +239,11 @@ class _MustEatInsertState extends State<MustEatInsert> {
                             backgroundColor:
                                 const Color.fromARGB(255, 7, 187, 169),
                           ),
-                          onPressed: () {
-                            _showDialog();
+                          onPressed: () async{
+                            await uploadImage();
+                            insertJSONData();
+                            Get.back();
+                            // _showDialog();
                           },
                           child: Text(
                             'Add',
@@ -332,7 +343,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
 
   uploadImage() async {
     var request = http.MultipartRequest(
-        'POST', Uri.parse('http://127.0.0.1:8000/upload'));
+        'POST', Uri.parse('http://127.0.0.1:8000/insert/upload'));
     var multipartFile =
         await http.MultipartFile.fromPath('file', imageFile!.path);
     request.files.add(multipartFile);
@@ -354,7 +365,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
   insertJSONData() async {
     String nowDatetime = DateFormat('yyyy-MM-dd').format(now);
     var url = Uri.parse(
-        'http://192.168.50.123:8000/insert?name=${nameController.text}&image=$image&phone=${phoneController.text}&long=${longController.text}&lat=${latController.text}&adddate=${nowDatetime}&favorite=$favorite&lat=${commentController.text}&evaluate=$evaluate');
+        'http://127.0.0.1:8000/insert/insert?name=${nameController.text}&image=$image&phone=${phoneController.text}&long=${longController.text}&lat=${latController.text}&adddate=${nowDatetime}&favorite=$favorite&comment=${commentController.text}&evaluate=$evaluate&user_id=$userId');
     var response = await http.get(url);
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataCovertedJSON['result'];
@@ -393,6 +404,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
               onPressed: () async {
                 await uploadImage();
                 insertJSONData();
+                Get.back();
               },
               child: Text('OK')),
           TextButton(

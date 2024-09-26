@@ -76,7 +76,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                               getImageFromGallery(ImageSource.gallery);
                             },
                             child: Image.network(
-                              "http://127.0.0.1:8000/view/${value[2]}",
+                              "http://127.0.0.1:8000/update/view/${value[2]}",
                               fit: BoxFit.cover,
                               width: double.infinity,
                               height: 250,
@@ -272,7 +272,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
 
 
     updateJSONData(date) async{
-    var url = Uri.parse('http://127.0.0.1:8000/update?seq=${value[0]}&name=${nameControl.text}&phone=${phoneControl.text}&long=${double.parse(longControl.text)}&lat=${double.parse(latControl.text)}&adddate=${date.toString()}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
+    var url = Uri.parse('http://127.0.0.1:8000/update/update?seq=${value[0]}&name=${nameControl.text}&phone=${phoneControl.text}&long=${double.parse(longControl.text)}&lat=${double.parse(latControl.text)}&adddate=${date.toString()}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -291,7 +291,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
   
     // uploads에 있는 Image 삭제
     deleteImage(String filename) async{
-    final response = await http.delete(Uri.parse('http://127.0.0.1:8000/deleteFile/$filename'));
+    final response = await http.delete(Uri.parse('http://127.0.0.1:8000/update/deleteFile/$filename'));
     if (response.statusCode == 200) {
       print("Image deleted successfully");
     }else {
@@ -302,7 +302,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
     uploadImage() async{
     // POST 방식
     var request = http.MultipartRequest(
-      "POST", Uri.parse('http://127.0.0.1:8000/upload')
+      "POST", Uri.parse('http://127.0.0.1:8000/update/upload')
     );
     var multipartFile = await http.MultipartFile.fromPath('file', imageFile!.path);
     request.files.add(multipartFile);
@@ -323,7 +323,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
   }
     // Image를 선택후 업데이트
     updateJSONDataAll(date) async{
-    var url = Uri.parse('http://127.0.0.1:8000/updateAll?seq=${value[0]}&name=${nameControl.text}&image=$filename&phone=${phoneControl.text}&long=${double.parse(longControl.text)}&lat=${double.parse(latControl.text)}&adddate=${date.toString()}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
+    var url = Uri.parse('http://127.0.0.1:8000/update/updateAll?seq=${value[0]}&name=${nameControl.text}&image=$filename&phone=${phoneControl.text}&long=${double.parse(longControl.text)}&lat=${double.parse(latControl.text)}&adddate=${date.toString()}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
