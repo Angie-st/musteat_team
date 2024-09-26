@@ -37,7 +37,7 @@ class _MustEatListState extends State<MustEatList> {
     isChange = false;
     colorList = [
       const Color(0xFFFFE0E6),
-      const Color(0xFFFFE0B2),
+      const Color.fromARGB(255, 255, 241, 178),
       const Color(0xFFC8E6C9),
       const Color(0xFFB3E5FC),
     ];
@@ -48,7 +48,7 @@ class _MustEatListState extends State<MustEatList> {
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
-          backgroundColor: const Color.fromARGB(255, 7, 187, 169), // 버튼 배경 색상
+          backgroundColor: Color.fromARGB(234, 106, 212, 218), // 버튼 배경 색상
           child: const Icon(
             Icons.add,
             color: Colors.white,
@@ -68,7 +68,7 @@ class _MustEatListState extends State<MustEatList> {
               padding: const EdgeInsets.only(right: 10),
               child: Switch(
                 activeColor: const Color.fromARGB(255, 241, 241, 241),
-                activeTrackColor: const Color.fromARGB(255, 11, 203, 184),
+                activeTrackColor: Colors.red,
                 value: switchValue,
                 onChanged: (value) {              
                   switchValue = !switchValue;
@@ -92,7 +92,7 @@ class _MustEatListState extends State<MustEatList> {
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 205, 98, 90)
+                        color: Colors.red
                       ),
                       ))
                       : ListView.builder(
@@ -134,6 +134,8 @@ class _MustEatListState extends State<MustEatList> {
                                                     data[index][3], //phone
                                                     data[index][4], //long
                                                     data[index][5], //lat
+                                                    data[index][6], //adddate
+                                                    data[index][7], //favorite
                                                     data[index][8], //comment
                                                     data[index][9], //evaluate
                                                     data[index][10] //user_id
@@ -170,16 +172,24 @@ class _MustEatListState extends State<MustEatList> {
                                       child: Column(
                                         children: [
                                           Container(
-                                            color: colorList[
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10),
+                                              color: colorList[
                                                 (index % colorList.length)],
+                                            ),
+                                            // color: colorList[
+                                            //     (index % colorList.length)],
                                             child: Row(
                                               children: [
                                                 SizedBox(
                                                   height: 80,
                                                   width: 100,
-                                                  child: Image.network('http://127.0.0.1:8000/query/view/${data[index][2]}'
-                                                    ,
-                                                    fit: BoxFit.cover,
+                                                  child: ClipRRect(
+                                                    borderRadius: BorderRadius.circular(5),
+                                                    child: Image.network('http://127.0.0.1:8000/query/view/${data[index][2]}'
+                                                      ,
+                                                      fit: BoxFit.cover,
+                                                    ),
                                                   ),
                                                 ),
                                                 const SizedBox(
@@ -241,7 +251,7 @@ class _MustEatListState extends State<MustEatList> {
                                     ),
                                   ),
                                   const SizedBox(
-                                    height: 10,
+                                    height: 12,
                                   )
                                 ],
                               ),

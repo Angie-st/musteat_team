@@ -77,7 +77,7 @@ class _MustEatLocationState extends State<MustEatLocation> {
                       // 이미지
                       Image.network(
                         'http://127.0.0.1:8000/query/view/$image',
-                        fit: BoxFit.cover,
+                        fit: BoxFit.fitWidth,
                         width: double.infinity,
                         height: 250,
                       ),
