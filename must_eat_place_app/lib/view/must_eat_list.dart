@@ -201,15 +201,11 @@ class _MustEatListState extends State<MustEatList> {
                                                 Spacer(),
                                                 GestureDetector(
                                                   onTap: () {
-                                                    setState(() {});
                                                     isChange = data[index][7] == 1;
                                                     data[index][7] =
                                                         isChange ? 0 : 1;
-                                                    handler.updateFavorite(
-                                                        snapshot.data![index]
-                                                            .favorite,
-                                                        snapshot
-                                                            .data![index].seq);
+                                                        updateJSONFavorite(index);
+                                                        setState(() {});
                                                   },
                                                   child: Padding(
                                                     padding:
@@ -496,5 +492,13 @@ class _MustEatListState extends State<MustEatList> {
     List result = dataConvertedJSON['result'];
     data.addAll(result);
     setState(() {});
+  }
+
+  updateJSONFavorite(index) async{
+    var url=Uri.parse(
+      'http://127.0.0.1:8000/update_favorite?seq=${data[index][0]}&favorite=${data[index][0]}&user_id=${data[index][10]}');
+    var response=await http.get(url);
+    var dataConvertedJSON=json.decode(utf8.decode(response.bodyBytes));
+    var result=dataConvertedJSON['result'];
   }
 } //End

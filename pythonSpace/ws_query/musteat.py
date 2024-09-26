@@ -28,12 +28,12 @@ def connection():
     return conn
 
 @app.get('/select')
-async def select():
+async def select(user_id: str=None):
     conn = connection()
     curs= conn.cursor()
     try:
-        sql = "select * from addmusteat"
-        curs.execute(sql)
+        sql = "select * from addmusteat where user_id=%s"
+        curs.execute(sql, (user_id,))
         rows = curs.fetchall()
         conn.close()
         print(rows)
@@ -44,12 +44,12 @@ async def select():
         return {'result' : "Error"}
 
 @app.get('/select_favorite')
-async def select():
+async def select(user_id: str=None):
     conn = connection()
     curs= conn.cursor()
     try:
-        sql = "select * from addmusteat where favorite=1"
-        curs.execute(sql)
+        sql = "select * from addmusteat where user_id=%s and favorite=1"
+        curs.execute(sql, (user_id,))
         rows = curs.fetchall()
         conn.close()
         print(rows)
@@ -78,9 +78,10 @@ async def upload_file(file: UploadFile=File(...)):
         print("Error:", e)
         return ({'result' : 'Error'})
 
+# 이미지 폴더에서 삭제된 목록의 이미지 삭제
 @app.delete('/deleteFile/{file_name}')
 async def delete_file(file_name: str):
-    # print("delete file :", file_name)
+    # print("delete file :", file_name) 
     try:
         file_path = os.path.join(UPLOAD_FOLDER, file_name)
         if os.path.exists(file_path):
@@ -107,6 +108,20 @@ async def delete(seq: int=None):
         return {'results': 'Error'}
     
     # Update favorite 추가
+@app.get('/update_favorite')
+async def insert(seq: int=None, favorite: int=None, user_id: str=None):
+    conn = connection()
+    curs= conn.cursor()
+    try:
+        sql = "update addmusteat set favorite = %s where seq = %s and user_id = %s"
+        curs.execute(sql, (seq, favorite, user_id))
+        conn.commit()
+        conn.close()
+        return {'result' : 'OK'}
+    except Exception as e:
+        conn.close()
+        print('Error:', e)
+        return {'result' : "Error"}    
 
     
 if __name__ == "__main__":
