@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:geocoding/geocoding.dart';
 
 import 'package:flutter/material.dart';
@@ -22,19 +23,21 @@ class _MustEatLocationState extends State<MustEatLocation> {
   late double latData;
   late double longData;
   late MapController mapController;
-  var value = Get.arguments ?? "__";
-  late String image;
+  var value = Get.arguments ?? "-";
+  late Uint8List image;
   late String address;
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
+
     canRun = false;
     mapController = MapController();
     handler = DatabaseHandler();
-    latData = value[3];
+    latData = value[1];
     longData = value[2];
-    image = value[1];
+    image = value[4];
     name = value[0];
     address = '';
     getCurrentLocation();
@@ -52,7 +55,7 @@ class _MustEatLocationState extends State<MustEatLocation> {
         "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
 
     // You can use this address as needed
-    // print(address);
+    print(address);
     setState(() {});
   }
 
@@ -60,8 +63,8 @@ class _MustEatLocationState extends State<MustEatLocation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 254, 221, 103),
-        title: const Text(
+        backgroundColor: Color.fromARGB(255, 254, 221, 103),
+        title: Text(
           'MustEat',
           style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
         ),
@@ -69,14 +72,14 @@ class _MustEatLocationState extends State<MustEatLocation> {
       body: canRun
           ? Column(
               children: [
-                SizedBox(
+                Container(
                   width: MediaQuery.of(context).size.width, // 앱
                   height: 250,
                   child: Stack(
                     children: [
                       // 이미지
-                      Image.network(
-                        'http://127.0.0.1:8000/query/view/$image',
+                      Image.memory(
+                        image,
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: 250,
@@ -89,7 +92,7 @@ class _MustEatLocationState extends State<MustEatLocation> {
                           children: [
                             Text(
                               name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -104,7 +107,7 @@ class _MustEatLocationState extends State<MustEatLocation> {
                             ),
                             Text(
                               address,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -126,7 +129,7 @@ class _MustEatLocationState extends State<MustEatLocation> {
                 Expanded(child: flutterMap()),
               ],
             )
-          : const Center(
+          : Center(
               child: CircularProgressIndicator(),
             ),
     );
@@ -151,13 +154,13 @@ class _MustEatLocationState extends State<MustEatLocation> {
                   SizedBox(
                     child: Text(
                       name,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                           color: Colors.black),
                     ),
                   ),
-                  const Icon(
+                  Icon(
                     Icons.pin_drop,
                     size: 50,
                     color: Colors.red,
