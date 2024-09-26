@@ -27,9 +27,16 @@ class _MustEatListState extends State<MustEatList> {
   // 서버 저장 데이터
   List data = [];
 
+  iniStorage() {
+    userId = box.read('p_userID');
+  }
+
   @override
   void initState() {
     super.initState();
+    userId = "";
+    iniStorage();
+    getJSONData();
     isChange = false;
     colorList = [
       const Color(0xFFFFE0E6),
@@ -62,9 +69,9 @@ class _MustEatListState extends State<MustEatList> {
           },
         ),
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 254, 221, 103),
-          title: Text(
-            'MustEat',
+          backgroundColor: const Color.fromARGB(255, 254, 221, 103),
+          title: const Text(
+            'TasteTracker',
             style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
           ),
           actions: [
@@ -75,8 +82,8 @@ class _MustEatListState extends State<MustEatList> {
                 activeTrackColor: Colors.red,
                 value: switchValue,
                 onChanged: (value) {
-                  //switchValue = !switchValue;
-                  //switchValue == false ? getJSONData() : getJSONFavorite();
+                  switchValue = !switchValue;
+                  switchValue == false ? getJSONData() : getJSONFavorite();
                   setState(() {});
                 },
               ),
@@ -92,13 +99,14 @@ class _MustEatListState extends State<MustEatList> {
               children: [
                 Expanded(
                   child: data.isEmpty
-                      ? const Center(child: Text('Add List!',
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red
-                      ),
-                      ))
+                      ? const Center(
+                          child: Text(
+                          'Add List!',
+                          style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red),
+                        ))
                       : ListView.builder(
                           itemCount: data.length,
                           itemBuilder: (context, index) {
@@ -130,7 +138,9 @@ class _MustEatListState extends State<MustEatList> {
                                         children: [
                                           SlidableAction(
                                             onPressed: (context) {
-                                              Get.to(() => MustEatUpdate(),
+                                              Get.to(
+                                                      () =>
+                                                          const MustEatUpdate(),
                                                       arguments: [
                                                     data[index][0], //seq
                                                     data[index][1], //name
@@ -149,10 +159,12 @@ class _MustEatListState extends State<MustEatList> {
                                               );
                                             },
                                             icon: Icons.edit,
-                                            borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(10),
-                                                bottomLeft:
-                                                    Radius.circular(10)),
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(10),
+                                                    bottomLeft:
+                                                        Radius.circular(10)),
                                             backgroundColor: Colors.green,
                                           )
                                         ],
@@ -166,10 +178,12 @@ class _MustEatListState extends State<MustEatList> {
                                                   index, data[index][2]);
                                             },
                                             icon: Icons.delete,
-                                            borderRadius: BorderRadius.only(
-                                                topRight: Radius.circular(10),
-                                                bottomRight:
-                                                    Radius.circular(10)),
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                                    topRight:
+                                                        Radius.circular(10),
+                                                    bottomRight:
+                                                        Radius.circular(10)),
                                             backgroundColor: Colors.red,
                                           )
                                         ],
@@ -178,9 +192,10 @@ class _MustEatListState extends State<MustEatList> {
                                         children: [
                                           Container(
                                             decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(10),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                               color: colorList[
-                                                (index % colorList.length)],
+                                                  (index % colorList.length)],
                                             ),
                                             // color: colorList[
                                             //     (index % colorList.length)],
@@ -190,9 +205,11 @@ class _MustEatListState extends State<MustEatList> {
                                                   height: 80,
                                                   width: 100,
                                                   child: ClipRRect(
-                                                    borderRadius: BorderRadius.circular(5),
-                                                    child: Image.network('http://127.0.0.1:8000/query/view/${data[index][2]}'
-                                                      ,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                    child: Image.network(
+                                                      'http://127.0.0.1:8000/query/view/${data[index][2]}',
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -206,7 +223,7 @@ class _MustEatListState extends State<MustEatList> {
                                                   children: [
                                                     Text(
                                                       data[index][1],
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                           fontSize: 18,
                                                           fontWeight:
                                                               FontWeight.bold),
@@ -216,7 +233,7 @@ class _MustEatListState extends State<MustEatList> {
                                                     ),
                                                     Text(
                                                       data[index][3],
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         fontSize: 16,
                                                         color: Colors.black54,
                                                       ),
@@ -238,9 +255,10 @@ class _MustEatListState extends State<MustEatList> {
                                                         const EdgeInsets.all(
                                                             15.0),
                                                     child: data[index][7] == 0
-                                                        ? Icon(Icons
+                                                        ? const Icon(Icons
                                                             .favorite_border)
-                                                        : Icon(Icons.favorite),
+                                                        : const Icon(
+                                                            Icons.favorite),
                                                   ),
                                                 ),
                                                 Container(
@@ -479,16 +497,16 @@ class _MustEatListState extends State<MustEatList> {
     final response = await http
         .delete(Uri.parse('http://127.0.0.1:8000/query/deleteFile/$filename'));
     if (response.statusCode == 200) {
-      print('Image deleted successfully');
+      // print('Image deleted successfully');
     } else {
-      print('Image deletion failed.');
+      // print('Image deletion failed.');
     }
   }
 
   deleteJSONData(index, filename) async {
     await deleteImage(filename);
-    var url = Uri.parse(
-        'http://127.0.0.1:8000/query/delete?seq=$index&user_id=$userId');
+    var url =
+        Uri.parse('http://127.0.0.1:8000/query/delete?seq=${data[index][0]}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
@@ -523,9 +541,11 @@ class _MustEatListState extends State<MustEatList> {
 
   updateJSONFavorite(index) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/query/update_favorite?seq=${data[index][0]}&favorite=${data[index][0]}&user_id=$userId');
+        'http://127.0.0.1:8000/query/update_favorite?favorite=${data[index][7]}&seq=${data[index][0]}&user_id=$userId');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['results'];
+    if (result == 'OK') {
+    } else {}
   }
 } //End

@@ -95,6 +95,7 @@ class _LoginState extends State<Login> {
                       left: 30, right: 30, top: 15, bottom: 10),
                   child: TextField(
                     controller: passwordController,
+                    obscureText: true,
                     showCursor: false,
                     decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
@@ -200,9 +201,9 @@ class _LoginState extends State<Login> {
 
   _showDialog() {
     Get.defaultDialog(
-        title: '환영합니다 ${box.read('p_userID')}님!',
-        middleText: '오늘도 즐거운 쇼핑이 되세요!',
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        title: 'Hey ${box.read('p_userID')}!',
+        middleText: 'Welcome to TasteTracker',
+        backgroundColor: Colors.white,
         barrierDismissible: false,
         actions: [
           TextButton(
@@ -213,7 +214,7 @@ class _LoginState extends State<Login> {
                 () => const MustEatList(),
               );
             },
-            child: const Text('확인'),
+            child: const Text('OK'),
           )
         ]);
   }
