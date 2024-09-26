@@ -25,14 +25,15 @@ class _MustEatListState extends State<MustEatList> {
   // 서버 저장 데이터
   List data = [];
 
-    iniStorage() {
+  iniStorage() {
     userId = box.read('p_userID');
   }
+
   @override
   void initState() {
     super.initState();
-    userId = "";    
-    iniStorage();        
+    userId = "";
+    iniStorage();
     getJSONData();
     isChange = false;
     colorList = [
@@ -60,7 +61,7 @@ class _MustEatListState extends State<MustEatList> {
         appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 254, 221, 103),
           title: const Text(
-            'MustEat',
+            'TasteTracker',
             style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
           ),
           actions: [
@@ -70,10 +71,10 @@ class _MustEatListState extends State<MustEatList> {
                 activeColor: const Color.fromARGB(255, 241, 241, 241),
                 activeTrackColor: Colors.red,
                 value: switchValue,
-                onChanged: (value) {              
+                onChanged: (value) {
                   switchValue = !switchValue;
                   switchValue == false ? getJSONData() : getJSONFavorite();
-                  setState(() {});                  
+                  setState(() {});
                 },
               ),
             ),
@@ -88,13 +89,14 @@ class _MustEatListState extends State<MustEatList> {
               children: [
                 Expanded(
                   child: data.isEmpty
-                      ? const Center(child: Text('Add List!',
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red
-                      ),
-                      ))
+                      ? const Center(
+                          child: Text(
+                          'Add List!',
+                          style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red),
+                        ))
                       : ListView.builder(
                           itemCount: data.length,
                           itemBuilder: (context, index) {
@@ -126,7 +128,9 @@ class _MustEatListState extends State<MustEatList> {
                                         children: [
                                           SlidableAction(
                                             onPressed: (context) {
-                                              Get.to(() => const MustEatUpdate(),
+                                              Get.to(
+                                                      () =>
+                                                          const MustEatUpdate(),
                                                       arguments: [
                                                     data[index][0], //seq
                                                     data[index][1], //name
@@ -145,10 +149,12 @@ class _MustEatListState extends State<MustEatList> {
                                               );
                                             },
                                             icon: Icons.edit,
-                                            borderRadius: const BorderRadius.only(
-                                                topLeft: Radius.circular(10),
-                                                bottomLeft:
-                                                    Radius.circular(10)),
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(10),
+                                                    bottomLeft:
+                                                        Radius.circular(10)),
                                             backgroundColor: Colors.green,
                                           )
                                         ],
@@ -158,13 +164,16 @@ class _MustEatListState extends State<MustEatList> {
                                         children: [
                                           SlidableAction(
                                             onPressed: (context) {
-                                              _showDialog(index, data[index][2]);
+                                              _showDialog(
+                                                  index, data[index][2]);
                                             },
                                             icon: Icons.delete,
-                                            borderRadius: const BorderRadius.only(
-                                                topRight: Radius.circular(10),
-                                                bottomRight:
-                                                    Radius.circular(10)),
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                                    topRight:
+                                                        Radius.circular(10),
+                                                    bottomRight:
+                                                        Radius.circular(10)),
                                             backgroundColor: Colors.red,
                                           )
                                         ],
@@ -173,9 +182,10 @@ class _MustEatListState extends State<MustEatList> {
                                         children: [
                                           Container(
                                             decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(10),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                               color: colorList[
-                                                (index % colorList.length)],
+                                                  (index % colorList.length)],
                                             ),
                                             // color: colorList[
                                             //     (index % colorList.length)],
@@ -185,9 +195,11 @@ class _MustEatListState extends State<MustEatList> {
                                                   height: 80,
                                                   width: 100,
                                                   child: ClipRRect(
-                                                    borderRadius: BorderRadius.circular(5),
-                                                    child: Image.network('http://127.0.0.1:8000/query/view/${data[index][2]}'
-                                                      ,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                    child: Image.network(
+                                                      'http://127.0.0.1:8000/query/view/${data[index][2]}',
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -200,7 +212,7 @@ class _MustEatListState extends State<MustEatList> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                          data[index][1],
+                                                      data[index][1],
                                                       style: const TextStyle(
                                                           fontSize: 18,
                                                           fontWeight:
@@ -210,7 +222,7 @@ class _MustEatListState extends State<MustEatList> {
                                                       height: 3,
                                                     ),
                                                     Text(
-                                                          data[index][3],
+                                                      data[index][3],
                                                       style: const TextStyle(
                                                         fontSize: 16,
                                                         color: Colors.black54,
@@ -221,21 +233,22 @@ class _MustEatListState extends State<MustEatList> {
                                                 const Spacer(),
                                                 GestureDetector(
                                                   onTap: () {
-                                                    isChange = data[index][7] == 1;
+                                                    isChange =
+                                                        data[index][7] == 1;
                                                     data[index][7] =
                                                         isChange ? 0 : 1;
-                                                        updateJSONFavorite(index);
-                                                        setState(() {});
+                                                    updateJSONFavorite(index);
+                                                    setState(() {});
                                                   },
                                                   child: Padding(
                                                     padding:
                                                         const EdgeInsets.all(
                                                             15.0),
-                                                    child: data[index][7]
-                                                                == 0
+                                                    child: data[index][7] == 0
                                                         ? const Icon(Icons
                                                             .favorite_border)
-                                                        : const Icon(Icons.favorite),
+                                                        : const Icon(
+                                                            Icons.favorite),
                                                   ),
                                                 ),
                                                 Container(
@@ -290,27 +303,28 @@ class _MustEatListState extends State<MustEatList> {
         ]);
   }
 
-    deleteImage(String filename) async{
-    final response = await http.delete(Uri.parse('http://127.0.0.1:8000/query/deleteFile/$filename'));
-    if (response.statusCode==200){
+  deleteImage(String filename) async {
+    final response = await http
+        .delete(Uri.parse('http://127.0.0.1:8000/query/deleteFile/$filename'));
+    if (response.statusCode == 200) {
       // print('Image deleted successfully');
-    }else{
+    } else {
       // print('Image deletion failed.');
     }
   }
 
-  deleteJSONData(index, filename) async{
+  deleteJSONData(index, filename) async {
     await deleteImage(filename);
-    var url=Uri.parse(
-      'http://127.0.0.1:8000/query/delete?seq=${data[index][0]}');
-    var response=await http.get(url);
-    var dataConvertedJSON=json.decode(utf8.decode(response.bodyBytes));
-    var result=dataConvertedJSON['results'];
-    if(result=='OK'){
+    var url =
+        Uri.parse('http://127.0.0.1:8000/query/delete?seq=${data[index][0]}');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['results'];
+    if (result == 'OK') {
       setState(() {});
       data.removeAt(index);
-      // setState를 해도 화면 이동 없으면 현재 화면에서의 data List에서는 바로 지워지지 않으므로 
-      //List에서 데이터를 지우는 removeAt도 함께 추가. 
+      // setState를 해도 화면 이동 없으면 현재 화면에서의 data List에서는 바로 지워지지 않으므로
+      //List에서 데이터를 지우는 removeAt도 함께 추가.
     }
   }
 
@@ -326,7 +340,8 @@ class _MustEatListState extends State<MustEatList> {
   }
 
   getJSONFavorite() async {
-    var url = Uri.parse('http://127.0.0.1:8000/query/select_favorite?user_id=$userId');
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/query/select_favorite?user_id=$userId');
     var response = await http.get(url);
     data.clear();
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
@@ -335,14 +350,13 @@ class _MustEatListState extends State<MustEatList> {
     setState(() {});
   }
 
-  updateJSONFavorite(index) async{
-    var url=Uri.parse(
-      'http://127.0.0.1:8000/query/update_favorite?favorite=${data[index][7]}&seq=${data[index][0]}&user_id=$userId');
-    var response=await http.get(url);
-    var dataConvertedJSON=json.decode(utf8.decode(response.bodyBytes));
-    var result=dataConvertedJSON['results'];
-    if(result=='OK'){
-    }else{
-    }
+  updateJSONFavorite(index) async {
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/query/update_favorite?favorite=${data[index][7]}&seq=${data[index][0]}&user_id=$userId');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['results'];
+    if (result == 'OK') {
+    } else {}
   }
 } //End

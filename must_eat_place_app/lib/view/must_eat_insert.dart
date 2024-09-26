@@ -187,24 +187,21 @@ class _MustEatInsertState extends State<MustEatInsert> {
                         height: 10,
                       ),
                       addBox(),
-                      Text('${evaluate}점'),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          RatingBar.builder(
-                            initialRating: 3,
-                            itemCount: 5,
-                            itemBuilder: (context, index) => Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                            ),
-                            onRatingUpdate: (rating) {
-                              debugPrint(rating.toString());
-                              evaluate = rating;
-                              setState(() {});
-                            },
-                          )
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: RatingBar.builder(
+                          initialRating: 3,
+                          itemCount: 5,
+                          itemBuilder: (context, index) => Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                          onRatingUpdate: (rating) {
+                            debugPrint(rating.toString());
+                            evaluate = rating;
+                            setState(() {});
+                          },
+                        ),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
