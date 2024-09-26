@@ -11,10 +11,10 @@ app = FastAPI()
 
 def connect():
     conn = pymysql.connect(
-        host='127.0.0.1',
+        host='192.168.50.123',
         user='root',
         password='qwer1234',
-        db='user',
+        db='musteat',
         charset='utf8'
     )
     return conn
@@ -27,6 +27,23 @@ async def checkuser(password: str=None, id: str=None):
     try:
         sql="select count(*) from user where id=%s and password=%s"
         curs.execute(sql,(id, password))
+        conn.commit()
+        user_check = curs.fetchone()[0]
+        conn.close()
+        return{'result': user_check}
+    except Exception as e:
+        conn.close()
+        print("Error",e)
+        return{'result':'Error'}
+
+@app.get("/checkuserid")
+async def checkuser(id: str=None):
+    print(id)
+    conn=connect()
+    curs=conn.cursor()
+    try:
+        sql="select count(*) from user where id=%s"
+        curs.execute(sql,(id))
         conn.commit()
         user_check = curs.fetchone()[0]
         conn.close()
