@@ -124,7 +124,7 @@ class _LoginState extends State<Login> {
   }
 
   checkUserJSONData()async{
-    var url = Uri.parse('http://127.0.0.1:8000/checkuser?id=${userIdController.text}&password=${passwordController.text}');
+    var url = Uri.parse('http://127.0.0.1:8000/login/checkuser?id=${userIdController.text}&password=${passwordController.text}');
     var response = await http.get(url);
     print(response.body);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));

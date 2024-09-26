@@ -239,8 +239,11 @@ class _MustEatInsertState extends State<MustEatInsert> {
                             backgroundColor:
                                 const Color.fromARGB(255, 7, 187, 169),
                           ),
-                          onPressed: () {
-                            _showDialog();
+                          onPressed: () async{
+                            await uploadImage();
+                            insertJSONData();
+                            Get.back();
+                            // _showDialog();
                           },
                           child: Text(
                             'Add',
@@ -340,7 +343,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
 
   uploadImage() async {
     var request = http.MultipartRequest(
-        'POST', Uri.parse('http://127.0.0.1:8000/upload'));
+        'POST', Uri.parse('http://127.0.0.1:8000/insert/upload'));
     var multipartFile =
         await http.MultipartFile.fromPath('file', imageFile!.path);
     request.files.add(multipartFile);
@@ -362,7 +365,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
   insertJSONData() async {
     String nowDatetime = DateFormat('yyyy-MM-dd').format(now);
     var url = Uri.parse(
-        'http://127.0.0.1:8000/insert?name=${nameController.text}&image=$image&phone=${phoneController.text}&long=${longController.text}&lat=${latController.text}&adddate=${nowDatetime}&favorite=$favorite&lat=${commentController.text}&evaluate=$evaluate&user_id=$userId');
+        'http://127.0.0.1:8000/insert/insert?name=${nameController.text}&image=$image&phone=${phoneController.text}&long=${longController.text}&lat=${latController.text}&adddate=${nowDatetime}&favorite=$favorite&comment=${commentController.text}&evaluate=$evaluate&user_id=$userId');
     var response = await http.get(url);
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataCovertedJSON['result'];
@@ -401,6 +404,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
               onPressed: () async {
                 await uploadImage();
                 insertJSONData();
+                Get.back();
               },
               child: Text('OK')),
           TextButton(

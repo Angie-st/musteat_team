@@ -165,7 +165,7 @@ class _UserSignInState extends State<UserSignIn> {
 
   // --- Functions ---
   insertJSONData()async{
-    var url = Uri.parse('http://127.0.0.1:8000/insertuserid?id=${userIdController.text}&password=${passwordController.text}&name=${nameController.text}&phone=${phoneController.text}');
+    var url = Uri.parse('http://127.0.0.1:8000/login/insertuserid?id=${userIdController.text}&password=${passwordController.text}&name=${nameController.text}&phone=${phoneController.text}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -177,7 +177,7 @@ class _UserSignInState extends State<UserSignIn> {
   }
 
   checkUserJSONData()async{
-    var url = Uri.parse('http://127.0.0.1:8000/checkuserid?id=${userIdController.text}');
+    var url = Uri.parse('http://127.0.0.1:8000/login/checkuserid?id=${userIdController.text}');
     var response = await http.get(url);
     print(response.body);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));

@@ -84,7 +84,7 @@ class _MustEatListState extends State<MustEatList> {
               children: [
                 Expanded(
                   child: data.isEmpty
-                      ? CircularProgressIndicator()
+                      ? const CircularProgressIndicator()
                       : ListView.builder(
                           itemCount: data.length,
                           itemBuilder: (context, index) {
@@ -129,7 +129,7 @@ class _MustEatListState extends State<MustEatList> {
                                                     data[index][10] //user_id
                                                   ])!
                                                   .then(
-                                                (value) => reloadData(),
+                                                (value) => getJSONData(),
                                               );
                                             },
                                             icon: Icons.edit,
@@ -167,7 +167,7 @@ class _MustEatListState extends State<MustEatList> {
                                                 Container(
                                                   height: 80,
                                                   width: 100,
-                                                  child: Image.network('http://127.0.0.1:8000/view/${data[index][2]}'
+                                                  child: Image.network('http://127.0.0.1:8000/query/view/${data[index][2]}'
                                                     ,
                                                     fit: BoxFit.cover,
                                                   ),
@@ -451,7 +451,7 @@ class _MustEatListState extends State<MustEatList> {
   }
 
     deleteImage(String filename) async{
-    final response = await http.delete(Uri.parse('http://127.0.0.1:8000/deleteFile/$filename'));
+    final response = await http.delete(Uri.parse('http://127.0.0.1:8000/query/deleteFile/$filename'));
     if (response.statusCode==200){
       print('Image deleted successfully');
     }else{
@@ -462,7 +462,7 @@ class _MustEatListState extends State<MustEatList> {
   deleteJSONData(index, filename) async{
     await deleteImage(filename);
     var url=Uri.parse(
-      'http://127.0.0.1:8000/delete?seq=$index');
+      'http://127.0.0.1:8000/query/delete?seq=$index');
     var response=await http.get(url);
     var dataConvertedJSON=json.decode(utf8.decode(response.bodyBytes));
     var result=dataConvertedJSON['results'];
@@ -475,30 +475,30 @@ class _MustEatListState extends State<MustEatList> {
   }
 
   getJSONData() async {
-    var url = Uri.parse('http://127.0.0.1:8000/select');
+    var url = Uri.parse('http://127.0.0.1:8000/query/select');
     var response = await http.get(url);
     data.clear();
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    List result = dataConvertedJSON['result'];
+    List result = dataConvertedJSON['results'];
     data.addAll(result);
     setState(() {});
   }
 
   getJSONFavorite() async {
-    var url = Uri.parse('http://127.0.0.1:8000/select_favorite');
+    var url = Uri.parse('http://127.0.0.1:8000/query/select_favorite');
     var response = await http.get(url);
     data.clear();
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
-    List result = dataConvertedJSON['result'];
+    List result = dataConvertedJSON['results'];
     data.addAll(result);
     setState(() {});
   }
 
   updateJSONFavorite(index) async{
     var url=Uri.parse(
-      'http://127.0.0.1:8000/update_favorite?seq=${data[index][0]}&favorite=${data[index][0]}&user_id=${data[index][10]}');
+      'http://127.0.0.1:8000/query/update_favorite?seq=${data[index][0]}&favorite=${data[index][0]}&user_id=${data[index][10]}');
     var response=await http.get(url);
     var dataConvertedJSON=json.decode(utf8.decode(response.bodyBytes));
-    var result=dataConvertedJSON['result'];
+    var result=dataConvertedJSON['results'];
   }
 } //End
