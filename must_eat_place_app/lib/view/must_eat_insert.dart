@@ -71,8 +71,8 @@ class _MustEatInsertState extends State<MustEatInsert> {
     Position position = await Geolocator.getCurrentPosition();
     currentPosition = position;
     canRun = true;
-    latController.text = currentPosition.latitude.toString().substring(0, 9);
-    longController.text = currentPosition.longitude.toString().substring(0, 9);
+    latController.text = currentPosition.latitude.toString().substring(0, 8);
+    longController.text = currentPosition.longitude.toString().substring(0, 8);
     setState(() {});
   }
 

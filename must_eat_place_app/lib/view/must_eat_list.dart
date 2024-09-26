@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:must_eat_place_app/view/must_eat_insert.dart';
 import 'package:must_eat_place_app/view/must_eat_location.dart';
 import 'package:must_eat_place_app/view/must_eat_update.dart';
@@ -21,15 +22,16 @@ class _MustEatListState extends State<MustEatList> {
   late bool isChange;
   late List colorList;
   late bool switchValue;
+  late String userId;
+  final box = GetStorage();
   // 서버 저장 데이터
   List data = [];
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    handler = DatabaseHandler();
     isChange = false;
+    userId = "";
     colorList = [
       Color(0xFFFFE0E6),
       Color(0xFFFFE0B2),
@@ -38,6 +40,11 @@ class _MustEatListState extends State<MustEatList> {
     ];
     switchValue = false;
     getJSONData();
+    iniStorage();
+  }    
+
+    iniStorage() {
+    userId = box.read('p_userID');
   }
 
   @override
@@ -50,7 +57,7 @@ class _MustEatListState extends State<MustEatList> {
             color: Colors.white,
           ),
           onPressed: () {
-            Get.to(() => MustEatInsert())!.then((value) => reloadData());
+            Get.to(() => MustEatInsert())!.then((value) => getJSONData());
           },
         ),
         appBar: AppBar(
@@ -66,10 +73,10 @@ class _MustEatListState extends State<MustEatList> {
                 activeColor: Color.fromARGB(255, 241, 241, 241),
                 activeTrackColor: Color.fromARGB(255, 11, 203, 184),
                 value: switchValue,
-                onChanged: (value) {
-                  setState(() {});
+                onChanged: (value) {              
                   switchValue = !switchValue;
-                  switchValue == true ? getJSONFavorite() : getJSONData();
+                  switchValue == false ? getJSONData() : getJSONFavorite();
+                  setState(() {});                  
                 },
               ),
             ),
@@ -93,8 +100,8 @@ class _MustEatListState extends State<MustEatList> {
                                   Get.to(MustEatLocation(), arguments: [
                                 data[index][1], //name
                                 data[index][2], //image
-                                data[index][4], //long
-                                data[index][5], //lat
+                                data[index][4].toString(), //long
+                                data[index][5].toString(), //lat
                                 data[index][10] //user_id
                               ]),
                               child: Column(
@@ -124,6 +131,8 @@ class _MustEatListState extends State<MustEatList> {
                                                     data[index][3], //phone
                                                     data[index][4], //long
                                                     data[index][5], //lat
+                                                    data[index][6], //adddate
+                                                    data[index][7], //favirite
                                                     data[index][8], //comment
                                                     data[index][9], //evaluate
                                                     data[index][10] //user_id
@@ -462,7 +471,7 @@ class _MustEatListState extends State<MustEatList> {
   deleteJSONData(index, filename) async{
     await deleteImage(filename);
     var url=Uri.parse(
-      'http://127.0.0.1:8000/query/delete?seq=$index');
+      'http://127.0.0.1:8000/query/delete?seq=$index&user_id=$userId');
     var response=await http.get(url);
     var dataConvertedJSON=json.decode(utf8.decode(response.bodyBytes));
     var result=dataConvertedJSON['results'];
@@ -475,7 +484,7 @@ class _MustEatListState extends State<MustEatList> {
   }
 
   getJSONData() async {
-    var url = Uri.parse('http://127.0.0.1:8000/query/select');
+    var url = Uri.parse('http://127.0.0.1:8000/query/select?user_id=$userId');
     var response = await http.get(url);
     data.clear();
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
@@ -485,7 +494,7 @@ class _MustEatListState extends State<MustEatList> {
   }
 
   getJSONFavorite() async {
-    var url = Uri.parse('http://127.0.0.1:8000/query/select_favorite');
+    var url = Uri.parse('http://127.0.0.1:8000/query/select_favorite?user_id=$userId');
     var response = await http.get(url);
     data.clear();
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
@@ -496,7 +505,7 @@ class _MustEatListState extends State<MustEatList> {
 
   updateJSONFavorite(index) async{
     var url=Uri.parse(
-      'http://127.0.0.1:8000/query/update_favorite?seq=${data[index][0]}&favorite=${data[index][0]}&user_id=${data[index][10]}');
+      'http://127.0.0.1:8000/query/update_favorite?seq=${data[index][0]}&favorite=${data[index][0]}&user_id=$userId');
     var response=await http.get(url);
     var dataConvertedJSON=json.decode(utf8.decode(response.bodyBytes));
     var result=dataConvertedJSON['results'];
