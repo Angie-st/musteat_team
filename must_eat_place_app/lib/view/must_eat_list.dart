@@ -103,8 +103,8 @@ class _MustEatListState extends State<MustEatList> {
                                   Get.to(const MustEatLocation(), arguments: [
                                 data[index][1], //name
                                 data[index][2], //image
-                                data[index][4].toString(), //long
-                                data[index][5].toString(), //lat
+                                data[index][4], //long
+                                data[index][5], //lat
                                 data[index][10] //user_id
                               ]),
                               child: Column(
