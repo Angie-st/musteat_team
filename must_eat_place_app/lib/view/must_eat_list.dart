@@ -32,10 +32,10 @@ class _MustEatListState extends State<MustEatList> {
     super.initState();
     isChange = false;
     colorList = [
-      Color(0xFFFFE0E6),
-      Color(0xFFFFE0B2),
-      Color(0xFFC8E6C9),
-      Color(0xFFB3E5FC),
+      const Color(0xFFFFE0E6),
+      const Color.fromARGB(255, 255, 241, 178),
+      const Color(0xFFC8E6C9),
+      const Color(0xFFB3E5FC),
     ];
     switchValue = false;
     iniStorage();
@@ -52,8 +52,8 @@ class _MustEatListState extends State<MustEatList> {
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
-          backgroundColor: const Color.fromARGB(255, 7, 187, 169), // 버튼 배경 색상
-          child: Icon(
+          backgroundColor: Color.fromARGB(234, 106, 212, 218), // 버튼 배경 색상
+          child: const Icon(
             Icons.add,
             color: Colors.white,
           ),
@@ -71,8 +71,8 @@ class _MustEatListState extends State<MustEatList> {
             Padding(
               padding: const EdgeInsets.only(right: 10),
               child: Switch(
-                activeColor: Color.fromARGB(255, 241, 241, 241),
-                activeTrackColor: Color.fromARGB(255, 11, 203, 184),
+                activeColor: const Color.fromARGB(255, 241, 241, 241),
+                activeTrackColor: Colors.red,
                 value: switchValue,
                 onChanged: (value) {
                   //switchValue = !switchValue;
@@ -92,7 +92,13 @@ class _MustEatListState extends State<MustEatList> {
               children: [
                 Expanded(
                   child: data.isEmpty
-                      ? const CircularProgressIndicator()
+                      ? const Center(child: Text('Add List!',
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red
+                      ),
+                      ))
                       : ListView.builder(
                           itemCount: data.length,
                           itemBuilder: (context, index) {
@@ -133,7 +139,7 @@ class _MustEatListState extends State<MustEatList> {
                                                     data[index][4], //long
                                                     data[index][5], //lat
                                                     data[index][6], //adddate
-                                                    data[index][7], //favirite
+                                                    data[index][7], //favorite
                                                     data[index][8], //comment
                                                     data[index][9], //evaluate
                                                     data[index][10] //user_id
@@ -171,16 +177,24 @@ class _MustEatListState extends State<MustEatList> {
                                       child: Column(
                                         children: [
                                           Container(
-                                            color: colorList[
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10),
+                                              color: colorList[
                                                 (index % colorList.length)],
+                                            ),
+                                            // color: colorList[
+                                            //     (index % colorList.length)],
                                             child: Row(
                                               children: [
                                                 Container(
                                                   height: 80,
                                                   width: 100,
-                                                  child: Image.network(
-                                                    'http://127.0.0.1:8000/query/view/${data[index][2]}',
-                                                    fit: BoxFit.cover,
+                                                  child: ClipRRect(
+                                                    borderRadius: BorderRadius.circular(5),
+                                                    child: Image.network('http://127.0.0.1:8000/query/view/${data[index][2]}'
+                                                      ,
+                                                      fit: BoxFit.cover,
+                                                    ),
                                                   ),
                                                 ),
                                                 SizedBox(
@@ -241,8 +255,8 @@ class _MustEatListState extends State<MustEatList> {
                                       ),
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 10,
+                                  const SizedBox(
+                                    height: 12,
                                   )
                                 ],
                               ),
