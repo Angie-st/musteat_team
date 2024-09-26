@@ -7,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:must_eat_place_app/view/must_eat_insert.dart';
 import 'package:must_eat_place_app/view/must_eat_location.dart';
 import 'package:must_eat_place_app/view/must_eat_update.dart';
+import 'package:must_eat_place_app/vm/database_handler.dart';
 import 'package:http/http.dart' as http;
 
 class MustEatList extends StatefulWidget {
@@ -17,6 +18,7 @@ class MustEatList extends StatefulWidget {
 }
 
 class _MustEatListState extends State<MustEatList> {
+  late DatabaseHandler handler;
   late bool isChange;
   late List colorList;
   late bool switchValue;
@@ -25,23 +27,24 @@ class _MustEatListState extends State<MustEatList> {
   // 서버 저장 데이터
   List data = [];
 
-    iniStorage() {
-    userId = box.read('p_userID');
-  }
   @override
   void initState() {
     super.initState();
-    userId = "";    
-    iniStorage();        
-    getJSONData();
     isChange = false;
+    userId = "";
     colorList = [
-      const Color(0xFFFFE0E6),
-      const Color(0xFFFFE0B2),
-      const Color(0xFFC8E6C9),
-      const Color(0xFFB3E5FC),
+      Color(0xFFFFE0E6),
+      Color(0xFFFFE0B2),
+      Color(0xFFC8E6C9),
+      Color(0xFFB3E5FC),
     ];
     switchValue = false;
+    getJSONData();
+    iniStorage();
+  }    
+
+    iniStorage() {
+    userId = box.read('p_userID');
   }
 
   @override
@@ -49,17 +52,17 @@ class _MustEatListState extends State<MustEatList> {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           backgroundColor: const Color.fromARGB(255, 7, 187, 169), // 버튼 배경 색상
-          child: const Icon(
+          child: Icon(
             Icons.add,
             color: Colors.white,
           ),
           onPressed: () {
-            Get.to(() => const MustEatInsert())!.then((value) => getJSONData());
+            Get.to(() => MustEatInsert())!.then((value) => getJSONData());
           },
         ),
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 254, 221, 103),
-          title: const Text(
+          backgroundColor: Color.fromARGB(255, 254, 221, 103),
+          title: Text(
             'MustEat',
             style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
           ),
@@ -67,8 +70,8 @@ class _MustEatListState extends State<MustEatList> {
             Padding(
               padding: const EdgeInsets.only(right: 10),
               child: Switch(
-                activeColor: const Color.fromARGB(255, 241, 241, 241),
-                activeTrackColor: const Color.fromARGB(255, 11, 203, 184),
+                activeColor: Color.fromARGB(255, 241, 241, 241),
+                activeTrackColor: Color.fromARGB(255, 11, 203, 184),
                 value: switchValue,
                 onChanged: (value) {              
                   switchValue = !switchValue;
@@ -84,27 +87,21 @@ class _MustEatListState extends State<MustEatList> {
           padding: const EdgeInsets.all(15.0),
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
                   child: data.isEmpty
-                      ? const Center(child: Text('Add List!',
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 205, 98, 90)
-                      ),
-                      ))
+                      ? const CircularProgressIndicator()
                       : ListView.builder(
                           itemCount: data.length,
                           itemBuilder: (context, index) {
                             return GestureDetector(
                               onTap: () =>
-                                  Get.to(const MustEatLocation(), arguments: [
+                                  Get.to(MustEatLocation(), arguments: [
                                 data[index][1], //name
                                 data[index][2], //image
-                                data[index][4], //long
-                                data[index][5], //lat
+                                data[index][4].toString(), //long
+                                data[index][5].toString(), //lat
                                 data[index][10] //user_id
                               ]),
                               child: Column(
@@ -116,17 +113,17 @@ class _MustEatListState extends State<MustEatList> {
                                             color: Colors.grey.withOpacity(0.7),
                                             blurRadius: 5.0,
                                             spreadRadius: 0.0,
-                                            offset: const Offset(0, 5))
+                                            offset: Offset(0, 5))
                                       ],
                                       borderRadius: BorderRadius.circular(15),
                                     ),
                                     child: Slidable(
                                       startActionPane: ActionPane(
-                                        motion: const StretchMotion(),
+                                        motion: StretchMotion(),
                                         children: [
                                           SlidableAction(
                                             onPressed: (context) {
-                                              Get.to(() => const MustEatUpdate(),
+                                              Get.to(() => MustEatUpdate(),
                                                       arguments: [
                                                     data[index][0], //seq
                                                     data[index][1], //name
@@ -134,6 +131,8 @@ class _MustEatListState extends State<MustEatList> {
                                                     data[index][3], //phone
                                                     data[index][4], //long
                                                     data[index][5], //lat
+                                                    data[index][6], //adddate
+                                                    data[index][7], //favirite
                                                     data[index][8], //comment
                                                     data[index][9], //evaluate
                                                     data[index][10] //user_id
@@ -143,7 +142,7 @@ class _MustEatListState extends State<MustEatList> {
                                               );
                                             },
                                             icon: Icons.edit,
-                                            borderRadius: const BorderRadius.only(
+                                            borderRadius: BorderRadius.only(
                                                 topLeft: Radius.circular(10),
                                                 bottomLeft:
                                                     Radius.circular(10)),
@@ -152,14 +151,14 @@ class _MustEatListState extends State<MustEatList> {
                                         ],
                                       ),
                                       endActionPane: ActionPane(
-                                        motion: const StretchMotion(),
+                                        motion: StretchMotion(),
                                         children: [
                                           SlidableAction(
                                             onPressed: (context) {
                                               _showDialog(index, data[index][2]);
                                             },
                                             icon: Icons.delete,
-                                            borderRadius: const BorderRadius.only(
+                                            borderRadius: BorderRadius.only(
                                                 topRight: Radius.circular(10),
                                                 bottomRight:
                                                     Radius.circular(10)),
@@ -174,7 +173,7 @@ class _MustEatListState extends State<MustEatList> {
                                                 (index % colorList.length)],
                                             child: Row(
                                               children: [
-                                                SizedBox(
+                                                Container(
                                                   height: 80,
                                                   width: 100,
                                                   child: Image.network('http://127.0.0.1:8000/query/view/${data[index][2]}'
@@ -182,7 +181,7 @@ class _MustEatListState extends State<MustEatList> {
                                                     fit: BoxFit.cover,
                                                   ),
                                                 ),
-                                                const SizedBox(
+                                                SizedBox(
                                                   width: 20,
                                                 ),
                                                 Column(
@@ -191,24 +190,24 @@ class _MustEatListState extends State<MustEatList> {
                                                   children: [
                                                     Text(
                                                           data[index][1],
-                                                      style: const TextStyle(
+                                                      style: TextStyle(
                                                           fontSize: 18,
                                                           fontWeight:
                                                               FontWeight.bold),
                                                     ),
-                                                    const SizedBox(
+                                                    SizedBox(
                                                       height: 3,
                                                     ),
                                                     Text(
                                                           data[index][3],
-                                                      style: const TextStyle(
+                                                      style: TextStyle(
                                                         fontSize: 16,
                                                         color: Colors.black54,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                                const Spacer(),
+                                                Spacer(),
                                                 GestureDetector(
                                                   onTap: () {
                                                     isChange = data[index][7] == 1;
@@ -223,9 +222,9 @@ class _MustEatListState extends State<MustEatList> {
                                                             15.0),
                                                     child: data[index][7]
                                                                 == 0
-                                                        ? const Icon(Icons
+                                                        ? Icon(Icons
                                                             .favorite_border)
-                                                        : const Icon(Icons.favorite),
+                                                        : Icon(Icons.favorite),
                                                   ),
                                                 ),
                                                 Container(
@@ -240,13 +239,192 @@ class _MustEatListState extends State<MustEatList> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(
+                                  SizedBox(
                                     height: 10,
                                   )
                                 ],
                               ),
                             );
                           },
+                          // future: switchValue == true
+                          //     ? handler.getJSONFavorite()
+                          //     : handler.getJSONData(),
+                          // builder: (context, snapshot) {
+                          //   if (snapshot.hasError) {
+                          //     return Center(
+                          //       child: Text("에러는 ${snapshot.error}"),
+                          //     );
+                          //   } else if (snapshot.hasData) {
+                          //     return ListView.builder(
+                          //       itemCount: snapshot.data!.length,
+                          //       itemBuilder: (context, index) {
+                          //         return GestureDetector(
+                          //           onTap: () =>
+                          //               Get.to(MustEatLocation(), arguments: [
+                          //             snapshot.data![index].name,
+                          //             snapshot.data![index].lat,
+                          //             snapshot.data![index].long,
+                          //             snapshot.data![index].phone,
+                          //             snapshot.data![index].image,
+                          //           ]),
+                          //           child: Column(
+                          //             children: [
+                          //               Container(
+                          //                 decoration: BoxDecoration(
+                          //                   boxShadow: [
+                          //                     BoxShadow(
+                          //                         color: Colors.grey.withOpacity(0.7),
+                          //                         blurRadius: 5.0,
+                          //                         spreadRadius: 0.0,
+                          //                         offset: Offset(0, 5))
+                          //                   ],
+                          //                   borderRadius: BorderRadius.circular(15),
+                          //                 ),
+                          //                 child: Slidable(
+                          //                   startActionPane: ActionPane(
+                          //                     motion: StretchMotion(),
+                          //                     children: [
+                          //                       SlidableAction(
+                          //                         onPressed: (context) {
+                          //                           Get.to(() => MustEatUpdate(),
+                          //                                   arguments: [
+                          //                                 snapshot.data![index].name,
+                          //                                 snapshot.data![index].image,
+                          //                                 snapshot.data![index].phone,
+                          //                                 snapshot.data![index].long,
+                          //                                 snapshot.data![index].lat,
+                          //                                 snapshot
+                          //                                     .data![index].evaluate,
+                          //                                 snapshot
+                          //                                     .data![index].favorite,
+                          //                                 snapshot.data![index].seq
+                          //                               ])!
+                          //                               .then(
+                          //                             (value) => reloadData(),
+                          //                           );
+                          //                         },
+                          //                         icon: Icons.edit,
+                          //                         borderRadius: BorderRadius.only(
+                          //                             topLeft: Radius.circular(10),
+                          //                             bottomLeft:
+                          //                                 Radius.circular(10)),
+                          //                         backgroundColor: Colors.green,
+                          //                       )
+                          //                     ],
+                          //                   ),
+                          //                   endActionPane: ActionPane(
+                          //                     motion: StretchMotion(),
+                          //                     children: [
+                          //                       SlidableAction(
+                          //                         onPressed: (context) {
+                          //                           _showDialog(snapshot, index);
+                          //                         },
+                          //                         icon: Icons.delete,
+                          //                         borderRadius: BorderRadius.only(
+                          //                             topRight: Radius.circular(10),
+                          //                             bottomRight:
+                          //                                 Radius.circular(10)),
+                          //                         backgroundColor: Colors.red,
+                          //                       )
+                          //                     ],
+                          //                   ),
+                          //                   child: Column(
+                          //                     children: [
+                          //                       Container(
+                          //                         color: colorList[
+                          //                             (index % colorList.length)],
+                          //                         child: Row(
+                          //                           children: [
+                          //                             Container(
+                          //                               height: 80,
+                          //                               width: 100,
+                          //                               child: Image.memory(
+                          //                                 snapshot.data![index].image,
+                          //                                 fit: BoxFit.cover,
+                          //                               ),
+                          //                             ),
+                          //                             SizedBox(
+                          //                               width: 20,
+                          //                             ),
+                          //                             Column(
+                          //                               crossAxisAlignment:
+                          //                                   CrossAxisAlignment.start,
+                          //                               children: [
+                          //                                 Text(
+                          //                                   snapshot
+                          //                                       .data![index].name,
+                          //                                   style: TextStyle(
+                          //                                       fontSize: 18,
+                          //                                       fontWeight:
+                          //                                           FontWeight.bold),
+                          //                                 ),
+                          //                                 SizedBox(
+                          //                                   height: 3,
+                          //                                 ),
+                          //                                 Text(
+                          //                                   snapshot
+                          //                                       .data![index].phone,
+                          //                                   style: TextStyle(
+                          //                                     fontSize: 16,
+                          //                                     color: Colors.black54,
+                          //                                   ),
+                          //                                 ),
+                          //                               ],
+                          //                             ),
+                          //                             Spacer(),
+                          //                             GestureDetector(
+                          //                               onTap: () {
+                          //                                 setState(() {});
+                          //                                 isChange = snapshot
+                          //                                         .data![index]
+                          //                                         .favorite ==
+                          //                                     1;
+
+                          //                                 snapshot.data![index]
+                          //                                         .favorite =
+                          //                                     isChange ? 0 : 1;
+                          //                                 handler.updateFavorite(
+                          //                                     snapshot.data![index]
+                          //                                         .favorite,
+                          //                                     snapshot
+                          //                                         .data![index].seq);
+                          //                               },
+                          //                               child: Padding(
+                          //                                 padding:
+                          //                                     const EdgeInsets.all(
+                          //                                         15.0),
+                          //                                 child: snapshot.data![index]
+                          //                                             .favorite ==
+                          //                                         0
+                          //                                     ? Icon(Icons
+                          //                                         .favorite_border)
+                          //                                     : Icon(Icons.favorite),
+                          //                               ),
+                          //                             ),
+                          //                             Container(
+                          //                               height: 80,
+                          //                               width: 12,
+                          //                               color: Colors.black26,
+                          //                             )
+                          //                           ],
+                          //                         ),
+                          //                       ),
+                          //                     ],
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //               SizedBox(
+                          //                 height: 10,
+                          //               )
+                          //             ],
+                          //           ),
+                          //         );
+                          //       },
+                          //     );
+                          //   } else {
+                          //     return CircularProgressIndicator();
+                          //   }
+                          // },
                         ),
                 ),
               ],
@@ -268,37 +446,38 @@ class _MustEatListState extends State<MustEatList> {
         actions: [
           TextButton(
               onPressed: () {
+                setState(() {});
                 deleteJSONData(index, filename);
                 Get.back();
               },
-              child: const Text('OK')),
+              child: Text('OK')),
           TextButton(
               onPressed: () {
                 Get.back();
               },
-              child: const Text('Cancel')),
+              child: Text('Cancel')),
         ]);
   }
 
     deleteImage(String filename) async{
     final response = await http.delete(Uri.parse('http://127.0.0.1:8000/query/deleteFile/$filename'));
     if (response.statusCode==200){
-      // print('Image deleted successfully');
+      print('Image deleted successfully');
     }else{
-      // print('Image deletion failed.');
+      print('Image deletion failed.');
     }
   }
 
   deleteJSONData(index, filename) async{
     await deleteImage(filename);
     var url=Uri.parse(
-      'http://127.0.0.1:8000/query/delete?seq=${data[index][0]}');
+      'http://127.0.0.1:8000/query/delete?seq=$index&user_id=$userId');
     var response=await http.get(url);
     var dataConvertedJSON=json.decode(utf8.decode(response.bodyBytes));
     var result=dataConvertedJSON['results'];
     if(result=='OK'){
       setState(() {});
-      data.removeAt(index);
+      data.removeAt(index);   
       // setState를 해도 화면 이동 없으면 현재 화면에서의 data List에서는 바로 지워지지 않으므로 
       //List에서 데이터를 지우는 removeAt도 함께 추가. 
     }
@@ -308,7 +487,6 @@ class _MustEatListState extends State<MustEatList> {
     var url = Uri.parse('http://127.0.0.1:8000/query/select?user_id=$userId');
     var response = await http.get(url);
     data.clear();
-    // print(response.body);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     List result = dataConvertedJSON['results'];
     data.addAll(result);
@@ -327,12 +505,9 @@ class _MustEatListState extends State<MustEatList> {
 
   updateJSONFavorite(index) async{
     var url=Uri.parse(
-      'http://127.0.0.1:8000/query/update_favorite?favorite=${data[index][7]}&seq=${data[index][0]}&user_id=$userId');
+      'http://127.0.0.1:8000/query/update_favorite?seq=${data[index][0]}&favorite=${data[index][0]}&user_id=$userId');
     var response=await http.get(url);
     var dataConvertedJSON=json.decode(utf8.decode(response.bodyBytes));
     var result=dataConvertedJSON['results'];
-    if(result=='OK'){
-    }else{
-    }
   }
 } //End
