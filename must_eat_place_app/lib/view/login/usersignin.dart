@@ -14,7 +14,6 @@ class UserSignIn extends StatefulWidget {
 }
 
 class _UserSignInState extends State<UserSignIn> {
-  
   // Property
   late TextEditingController userIdController;
   late TextEditingController passwordController;
@@ -51,133 +50,150 @@ class _UserSignInState extends State<UserSignIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('회원가입'),
+        title: const Text(
+          'Create Account',
+          style: TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.w600,
+              color: Color.fromARGB(255, 245, 192, 4)),
+        ),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: SizedBox(
-                    width: 250,
-                    child: Column(
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: SizedBox(
+                      width: 230,
+                      child: Column(
+                        children: [
+                          TextField(
+                            controller: userIdController,
+                            decoration: const InputDecoration(
+                              labelText: 'User ID',
+                            ),
+                          ),
+                          Text(
+                            checkID,
+                            style: TextStyle(color: textIDColor),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
                       children: [
-                        TextField(
-                          controller: userIdController,
-                          decoration: const InputDecoration(
-                            labelText: '아이디',
+                        ElevatedButton(
+                          onPressed: () {
+                            checkUserID();
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFC06044)),
+                          child: const Text(
+                            'Confirm',
+                            style: TextStyle(color: Colors.white),
                           ),
                         ),
-                        Text(
-                          checkID,
-                          style: TextStyle(color: textIDColor),
-                        )
                       ],
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          checkUserID();
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFC06044)),
-                        child: const Text(
-                          '중복확인',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ],
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  onChanged: (value) {
+                    checkPassworld();
+                  },
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
                   ),
                 ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: TextField(
-                controller: passwordController,
-                obscureText: true,
-                onChanged: (value) {
-                  checkPassworld();
-                },
-                decoration: const InputDecoration(
-                  labelText: '비밀번호',
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Text(
+                  checkpassword,
+                  style: TextStyle(color: textColor),
                 ),
               ),
-            ),
-            Text(
-              checkpassword,
-              style: TextStyle(color: textColor),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: TextField(
-                controller: repasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: '비밀번호 확인',
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+                child: TextField(
+                  controller: repasswordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Confirm Password',
+                  ),
+                  onChanged: (value) {
+                    checkPassworld();
+                  },
                 ),
-                onChanged: (value) {
-                  checkPassworld();
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Text(
+                  passwordcheck2,
+                  style: TextStyle(color: textColor2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Name'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: TextField(
+                  controller: phoneController,
+                  decoration: const InputDecoration(labelText: 'Phone'),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  insertJSONData();
                 },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF748D65)),
+                child: const Text(
+                  'Sign up',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-            ),
-            Text(
-              passwordcheck2,
-              style: TextStyle(color: textColor2),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: '이름'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: TextField(
-                controller: phoneController,
-                decoration: const InputDecoration(labelText: '전화번호'),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                insertJSONData();
-              },
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF748D65)),
-              child: const Text(
-                '회원가입',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   // --- Functions ---
-  insertJSONData()async{
-    var url = Uri.parse('http://127.0.0.1:8000/login/insertuserid?id=${userIdController.text}&password=${passwordController.text}&name=${nameController.text}&phone=${phoneController.text}');
+  insertJSONData() async {
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/login/insertuserid?id=${userIdController.text}&password=${passwordController.text}&name=${nameController.text}&phone=${phoneController.text}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
-    if(result == 'OK'){
+    if (result == 'OK') {
       _showDialog('환영합니다', '회원가입이 완료 되었습니다.');
-    }else{
+    } else {
       // errorSnackBar();
     }
   }
 
-  checkUserJSONData()async{
-    var url = Uri.parse('http://127.0.0.1:8000/login/checkuserid?id=${userIdController.text}');
+  checkUserJSONData() async {
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/login/checkuserid?id=${userIdController.text}');
     var response = await http.get(url);
     print(response.body);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
@@ -224,37 +240,35 @@ class _UserSignInState extends State<UserSignIn> {
         ]);
   }
 
-checkPassworld() {
-  // 비밀번호 유효성 검사
-  String? passwordValidationMessage =
-      passwordCheckUser.validatePassword(passwordController.text.trim());
+  checkPassworld() {
+    // 비밀번호 유효성 검사
+    String? passwordValidationMessage =
+        passwordCheckUser.validatePassword(passwordController.text.trim());
 
-  // 비밀번호가 유효한 경우
-  if (passwordValidationMessage == null) {
-    checkpassword = '확인되었습니다';
-    textColor = Colors.green;
-  } else {
-    checkpassword = passwordValidationMessage;
-    textColor = Colors.red;
+    // 비밀번호가 유효한 경우
+    if (passwordValidationMessage == null) {
+      checkpassword = '확인되었습니다';
+      textColor = Colors.green;
+    } else {
+      checkpassword = passwordValidationMessage;
+      textColor = Colors.red;
+    }
+
+    // 비밀번호 확인 유효성 검사
+    String? confirmPasswordValidationMessage =
+        passwordCheckUser.validatePasswordConfirm(
+            passwordController.text.trim(), repasswordController.text.trim());
+
+    // 비밀번호 확인 메시지 설정
+    if (confirmPasswordValidationMessage == null) {
+      passwordcheck2 = '비밀번호가 일치합니다';
+      textColor2 = Colors.green;
+    } else {
+      passwordcheck2 = confirmPasswordValidationMessage;
+      textColor2 = Colors.red;
+    }
+
+    // 상태 갱신하여 UI 업데이트
+    setState(() {});
   }
-
-  // 비밀번호 확인 유효성 검사
-  String? confirmPasswordValidationMessage = passwordCheckUser.validatePasswordConfirm(
-    passwordController.text.trim(), 
-    repasswordController.text.trim()
-  );
-
-  // 비밀번호 확인 메시지 설정
-  if (confirmPasswordValidationMessage == null) {
-    passwordcheck2 = '비밀번호가 일치합니다';
-    textColor2 = Colors.green;
-  } else {
-    passwordcheck2 = confirmPasswordValidationMessage;
-    textColor2 = Colors.red;
-  }
-
-  // 상태 갱신하여 UI 업데이트
-  setState(() {});
-}
-
 }// END
