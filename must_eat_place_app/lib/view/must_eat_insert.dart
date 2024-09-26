@@ -193,15 +193,15 @@ class _MustEatInsertState extends State<MustEatInsert> {
                           RatingBar.builder(
                             initialRating: 3,
                             itemCount: 5,
-                            itemBuilder: (context, index) {
-                              return checkRating(index);
-                            },
+                            itemBuilder: (context, index) => Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
                             onRatingUpdate: (rating) {
-                              setState(() {
-                                evaluate = rating; // rating 값 업데이트
-                              });
+                              debugPrint(rating.toString());
+                              evaluate = rating;
                             },
-                          ),
+                          )
                         ],
                       ),
                       Row(
