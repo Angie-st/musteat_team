@@ -31,7 +31,6 @@ class _MustEatListState extends State<MustEatList> {
   void initState() {
     super.initState();
     isChange = false;
-    userId = "";
     colorList = [
       Color(0xFFFFE0E6),
       Color(0xFFFFE0B2),
@@ -39,12 +38,14 @@ class _MustEatListState extends State<MustEatList> {
       Color(0xFFB3E5FC),
     ];
     switchValue = false;
-    getJSONData();
     iniStorage();
-  }    
+    getJSONData();
 
-    iniStorage() {
-    userId = box.read('p_userID');
+    print(data);
+  }
+
+  iniStorage() {
+    userId = box.read('p_userID') ?? "__";
   }
 
   @override
@@ -73,10 +74,10 @@ class _MustEatListState extends State<MustEatList> {
                 activeColor: Color.fromARGB(255, 241, 241, 241),
                 activeTrackColor: Color.fromARGB(255, 11, 203, 184),
                 value: switchValue,
-                onChanged: (value) {              
-                  switchValue = !switchValue;
-                  switchValue == false ? getJSONData() : getJSONFavorite();
-                  setState(() {});                  
+                onChanged: (value) {
+                  //switchValue = !switchValue;
+                  //switchValue == false ? getJSONData() : getJSONFavorite();
+                  setState(() {});
                 },
               ),
             ),
@@ -100,8 +101,8 @@ class _MustEatListState extends State<MustEatList> {
                                   Get.to(MustEatLocation(), arguments: [
                                 data[index][1], //name
                                 data[index][2], //image
-                                data[index][4].toString(), //long
-                                data[index][5].toString(), //lat
+                                data[index][4], //long
+                                data[index][5], //lat
                                 data[index][10] //user_id
                               ]),
                               child: Column(
@@ -155,7 +156,8 @@ class _MustEatListState extends State<MustEatList> {
                                         children: [
                                           SlidableAction(
                                             onPressed: (context) {
-                                              _showDialog(index, data[index][2]);
+                                              _showDialog(
+                                                  index, data[index][2]);
                                             },
                                             icon: Icons.delete,
                                             borderRadius: BorderRadius.only(
@@ -176,8 +178,8 @@ class _MustEatListState extends State<MustEatList> {
                                                 Container(
                                                   height: 80,
                                                   width: 100,
-                                                  child: Image.network('http://127.0.0.1:8000/query/view/${data[index][2]}'
-                                                    ,
+                                                  child: Image.network(
+                                                    'http://127.0.0.1:8000/query/view/${data[index][2]}',
                                                     fit: BoxFit.cover,
                                                   ),
                                                 ),
@@ -189,7 +191,7 @@ class _MustEatListState extends State<MustEatList> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                          data[index][1],
+                                                      data[index][1],
                                                       style: TextStyle(
                                                           fontSize: 18,
                                                           fontWeight:
@@ -199,7 +201,7 @@ class _MustEatListState extends State<MustEatList> {
                                                       height: 3,
                                                     ),
                                                     Text(
-                                                          data[index][3],
+                                                      data[index][3],
                                                       style: TextStyle(
                                                         fontSize: 16,
                                                         color: Colors.black54,
@@ -210,18 +212,18 @@ class _MustEatListState extends State<MustEatList> {
                                                 Spacer(),
                                                 GestureDetector(
                                                   onTap: () {
-                                                    isChange = data[index][7] == 1;
+                                                    isChange =
+                                                        data[index][7] == 1;
                                                     data[index][7] =
                                                         isChange ? 0 : 1;
-                                                        updateJSONFavorite(index);
-                                                        setState(() {});
+                                                    updateJSONFavorite(index);
+                                                    setState(() {});
                                                   },
                                                   child: Padding(
                                                     padding:
                                                         const EdgeInsets.all(
                                                             15.0),
-                                                    child: data[index][7]
-                                                                == 0
+                                                    child: data[index][7] == 0
                                                         ? Icon(Icons
                                                             .favorite_border)
                                                         : Icon(Icons.favorite),
@@ -459,27 +461,28 @@ class _MustEatListState extends State<MustEatList> {
         ]);
   }
 
-    deleteImage(String filename) async{
-    final response = await http.delete(Uri.parse('http://127.0.0.1:8000/query/deleteFile/$filename'));
-    if (response.statusCode==200){
+  deleteImage(String filename) async {
+    final response = await http
+        .delete(Uri.parse('http://127.0.0.1:8000/query/deleteFile/$filename'));
+    if (response.statusCode == 200) {
       print('Image deleted successfully');
-    }else{
+    } else {
       print('Image deletion failed.');
     }
   }
 
-  deleteJSONData(index, filename) async{
+  deleteJSONData(index, filename) async {
     await deleteImage(filename);
-    var url=Uri.parse(
-      'http://127.0.0.1:8000/query/delete?seq=$index&user_id=$userId');
-    var response=await http.get(url);
-    var dataConvertedJSON=json.decode(utf8.decode(response.bodyBytes));
-    var result=dataConvertedJSON['results'];
-    if(result=='OK'){
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/query/delete?seq=$index&user_id=$userId');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['results'];
+    if (result == 'OK') {
       setState(() {});
-      data.removeAt(index);   
-      // setState를 해도 화면 이동 없으면 현재 화면에서의 data List에서는 바로 지워지지 않으므로 
-      //List에서 데이터를 지우는 removeAt도 함께 추가. 
+      data.removeAt(index);
+      // setState를 해도 화면 이동 없으면 현재 화면에서의 data List에서는 바로 지워지지 않으므로
+      //List에서 데이터를 지우는 removeAt도 함께 추가.
     }
   }
 
@@ -494,7 +497,8 @@ class _MustEatListState extends State<MustEatList> {
   }
 
   getJSONFavorite() async {
-    var url = Uri.parse('http://127.0.0.1:8000/query/select_favorite?user_id=$userId');
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/query/select_favorite?user_id=$userId');
     var response = await http.get(url);
     data.clear();
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
@@ -503,11 +507,11 @@ class _MustEatListState extends State<MustEatList> {
     setState(() {});
   }
 
-  updateJSONFavorite(index) async{
-    var url=Uri.parse(
-      'http://127.0.0.1:8000/query/update_favorite?seq=${data[index][0]}&favorite=${data[index][0]}&user_id=$userId');
-    var response=await http.get(url);
-    var dataConvertedJSON=json.decode(utf8.decode(response.bodyBytes));
-    var result=dataConvertedJSON['results'];
+  updateJSONFavorite(index) async {
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/query/update_favorite?seq=${data[index][0]}&favorite=${data[index][0]}&user_id=$userId');
+    var response = await http.get(url);
+    var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
+    var result = dataConvertedJSON['results'];
   }
 } //End

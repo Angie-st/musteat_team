@@ -72,8 +72,8 @@ class _MustEatInsertState extends State<MustEatInsert> {
     Position position = await Geolocator.getCurrentPosition();
     currentPosition = position;
     canRun = true;
-    latController.text = currentPosition.latitude.toString().substring(0, 8);
-    longController.text = currentPosition.longitude.toString().substring(0, 8);
+    latController.text = currentPosition.latitude.toString().substring(0, 9);
+    longController.text = currentPosition.longitude.toString().substring(0, 9);
     setState(() {});
   }
 
@@ -299,41 +299,6 @@ class _MustEatInsertState extends State<MustEatInsert> {
         ),
       ),
     );
-  }
-
-  checkRating(int index) {
-    switch (index) {
-      case 0:
-        return const Icon(
-          Icons.sentiment_very_dissatisfied,
-          color: Colors.red,
-        );
-      case 1:
-        return const Icon(
-          Icons.sentiment_dissatisfied,
-          color: Colors.redAccent,
-        );
-      case 2:
-        return const Icon(
-          Icons.sentiment_neutral,
-          color: Colors.amber,
-        );
-      case 3:
-        return const Icon(
-          Icons.sentiment_satisfied,
-          color: Colors.lightGreen,
-        );
-      case 4:
-        return const Icon(
-          Icons.sentiment_very_satisfied,
-          color: Colors.green,
-        );
-      default:
-        return const Icon(
-          Icons.sentiment_satisfied,
-          color: Colors.lightGreen,
-        );
-    }
   }
 
   getImageFromGallery(ImageSource imageSource) async {

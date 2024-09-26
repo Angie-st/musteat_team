@@ -24,7 +24,7 @@ class _MustEatLocationState extends State<MustEatLocation> {
   late double longData;
   late MapController mapController;
   var value = Get.arguments ?? "-";
-  late Uint8List image;
+  String image = "";
   late String address;
 
   @override
@@ -35,25 +35,30 @@ class _MustEatLocationState extends State<MustEatLocation> {
     canRun = false;
     mapController = MapController();
     handler = DatabaseHandler();
-    latData = value[1];
-    longData = value[2];
-    image = value[4];
+    latData = value[2];
+    longData = value[3];
     name = value[0];
     address = '';
     getCurrentLocation();
   }
 
   getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition();
-    currentPosition = position;
+    //Position position = await Geolocator.getCurrentPosition();
+    //currentPosition = position;
     canRun = true;
     // Perform reverse geocoding to get the address
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(latData, longData);
-    Placemark place = placemarks[0];
-    address =
-        "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
-
+    try {
+      Position position = await Geolocator.getCurrentPosition();
+      currentPosition = position;
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
+      Placemark place = placemarks[0];
+      address =
+          "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
+      print(address);
+    } catch (e) {
+      print("Error occurred: $e");
+    }
     // You can use this address as needed
     print(address);
     setState(() {});
@@ -78,8 +83,8 @@ class _MustEatLocationState extends State<MustEatLocation> {
                   child: Stack(
                     children: [
                       // 이미지
-                      Image.memory(
-                        image,
+                      Image.network(
+                        'http://127.0.0.1:8000/view/${value[5]}',
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: 250,
