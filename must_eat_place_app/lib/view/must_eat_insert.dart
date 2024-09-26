@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:must_eat_place_app/vm/database_handler.dart';
 import 'package:geolocator/geolocator.dart';
@@ -33,6 +34,8 @@ class _MustEatInsertState extends State<MustEatInsert> {
   String image = "";
   var now = DateTime.now();
   double evaluate = 0;
+  final box = GetStorage();
+  late String userId;
 
   @override
   void initState() {
@@ -43,6 +46,11 @@ class _MustEatInsertState extends State<MustEatInsert> {
     getCurrentLocation();
     iconChanged = false;
     favorite = 0;
+    initStorage();
+  }
+
+  initStorage() {
+    userId = box.read('p_userID') ?? "";
   }
 
   checkLocationPermission() async {
@@ -354,7 +362,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
   insertJSONData() async {
     String nowDatetime = DateFormat('yyyy-MM-dd').format(now);
     var url = Uri.parse(
-        'http://192.168.50.123:8000/insert?name=${nameController.text}&image=$image&phone=${phoneController.text}&long=${longController.text}&lat=${latController.text}&adddate=${nowDatetime}&favorite=$favorite&lat=${commentController.text}&evaluate=$evaluate');
+        'http://192.168.50.123:8000/insert?name=${nameController.text}&image=$image&phone=${phoneController.text}&long=${longController.text}&lat=${latController.text}&adddate=${nowDatetime}&favorite=$favorite&lat=${commentController.text}&evaluate=$evaluate&user_id=$userId');
     var response = await http.get(url);
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataCovertedJSON['result'];
