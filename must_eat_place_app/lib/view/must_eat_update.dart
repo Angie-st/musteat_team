@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -17,7 +18,6 @@ class MustEatUpdate extends StatefulWidget {
 }
 
 class _MustEatUpdateState extends State<MustEatUpdate> {
-
   var value = Get.arguments ?? "-";
   late TextEditingController longControl;
   late TextEditingController latControl;
@@ -25,17 +25,16 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
   TextEditingController phoneControl = TextEditingController();
   TextEditingController commentControl = TextEditingController();
   String nowDatetime = '';
-  double evaluate = 0;
+  late double evaluate;
   // Gallery 선택 여부
   int firstDisp = 0;
-
   String filename = '';
   XFile? imageFile;
   final ImagePicker picker = ImagePicker();
   late bool canRun;
   late bool iconChanged;
   late int favorite;
-  
+
   late int seq;
 // 1.seq, 2.name, 3.image, 4.phone, 5.long, 6.lat, 7.adddate, 8.favorite, 9.comment, 10.evaluate, 11.user_id
   @override
@@ -52,6 +51,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
     iconChanged = false;
     favorite = value[7];
     seq = value[0];
+    evaluate = value[9];
   }
 
   @override
@@ -95,7 +95,10 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                             onTap: () {
                               getImageFromGallery(ImageSource.gallery);
                             },
-                            child: Image.file(File(imageFile!.path,),
+                            child: Image.file(
+                              File(
+                                imageFile!.path,
+                              ),
                               fit: BoxFit.cover,
                               width: double.infinity,
                               height: 250,
@@ -161,6 +164,21 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                         height: 10,
                       ),
                       addBox(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: RatingBar.builder(
+                          initialRating: evaluate,
+                          itemCount: 5,
+                          itemBuilder: (context, index) => Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                          onRatingUpdate: (rating) {
+                            evaluate = rating;
+                            setState(() {});
+                          },
+                        ),
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -195,13 +213,14 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                                 const Color.fromARGB(255, 7, 187, 169),
                           ),
                           onPressed: () {
-                            if(firstDisp == 0){
+                            if (firstDisp == 0) {
                               // AddDate 추가
                               var now = DateTime.now();
-                              nowDatetime = DateFormat("yyyy-MM-dd").format(now);
+                              nowDatetime =
+                                  DateFormat("yyyy-MM-dd").format(now);
                               updateAction(nowDatetime);
                               setState(() {});
-                            }else{
+                            } else {
                               updateActionAll(nowDatetime);
                             }
                             // _showDialog();
@@ -242,13 +261,14 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
   // ---function---
 
   // 갤러리에 있는 이미지 넣기
-  getImageFromGallery(ImageSource imageSource) async{
+  getImageFromGallery(ImageSource imageSource) async {
     final XFile? pickerFile = await picker.pickImage(source: imageSource);
     imageFile = XFile(pickerFile!.path);
     firstDisp = 1;
     setState(() {});
     // print(imageFile!.path); // 경로 가져올때는 split을 사용해서 경로를 가져오면 된다.
   }
+
   // Todo Title에 들어가는 텍스트 필드
   Widget addBox() {
     return Container(
@@ -270,81 +290,83 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
     );
   }
 
-  updateAction(date){
+  updateAction(date) {
     updateJSONData(date);
   }
 
-
-
-    updateJSONData(date) async{
-    var url = Uri.parse('http://127.0.0.1:8000/update/update?seq=${value[0]}&name=${nameControl.text}&phone=${phoneControl.text}&adddate=${date.toString()}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
+  updateJSONData(date) async {
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/update/update?seq=${value[0]}&name=${nameControl.text}&phone=${phoneControl.text}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
-    if(result == 'OK'){
+    if (result == 'OK') {
       _showDialog();
-    }else{
+    } else {
       errorSnackBar();
     }
   }
 
-      updateActionAll(date) async{
+  updateActionAll(date) async {
     await deleteImage(value[2]);
     await uploadImage();
     updateJSONDataAll(date);
   }
-  
-    // uploads에 있는 Image 삭제
-    deleteImage(String filename) async{
-    final response = await http.delete(Uri.parse('http://127.0.0.1:8000/update/deleteFile/$filename'));
+
+  // uploads에 있는 Image 삭제
+  deleteImage(String filename) async {
+    final response = await http
+        .delete(Uri.parse('http://127.0.0.1:8000/update/deleteFile/$filename'));
     if (response.statusCode == 200) {
       print("Image deleted successfully");
-    }else {
+    } else {
       print("image deletion failed.");
     }
   }
 
-    uploadImage() async{
+  uploadImage() async {
     // POST 방식
     var request = http.MultipartRequest(
-      "POST", Uri.parse('http://127.0.0.1:8000/update/upload')
-    );
-    var multipartFile = await http.MultipartFile.fromPath('file', imageFile!.path);
+        "POST", Uri.parse('http://127.0.0.1:8000/update/upload'));
+    var multipartFile =
+        await http.MultipartFile.fromPath('file', imageFile!.path);
     request.files.add(multipartFile);
 
     // for getting file name
     List preFileName = imageFile!.path.split('/');
-    filename = preFileName[preFileName.length-1];
+    filename = preFileName[preFileName.length - 1];
     print("upload file name : $filename");
 
     var response = await request.send();
 
     // 200이면 정상적으로 들어간 것
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       print("Image upload successfully");
-    } else{
+    } else {
       print("Image upload failed");
     }
   }
-    // Image를 선택후 업데이트
-    updateJSONDataAll(date) async{
-    var url = Uri.parse('http://127.0.0.1:8000/update/updateAll?seq=${value[0]}&name=${nameControl.text}&image=$filename&phone=${phoneControl.text}&adddate=${date.toString()}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
+
+  // Image를 선택후 업데이트
+  updateJSONDataAll(date) async {
+    var url = Uri.parse(
+        'http://127.0.0.1:8000/update/updateAll?seq=${value[0]}&name=${nameControl.text}&image=$filename&phone=${phoneControl.text}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
-    if(result == 'OK'){
+    if (result == 'OK') {
       _showDialog();
-    }else{
+    } else {
       errorSnackBar();
     }
   }
 
-    _showDialog(){
+  _showDialog() {
     print("Successfully!");
     Get.back();
   }
 
-  errorSnackBar(){
+  errorSnackBar() {
     print("Error");
   }
 } //End

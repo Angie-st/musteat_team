@@ -33,7 +33,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
 // ImangePicker에서 선택된 filename, 초기값 주기위해서
   String image = "";
   var now = DateTime.now();
-  double evaluate = 0;
+  late double evaluate;
   final box = GetStorage();
   late String userId;
 
@@ -47,6 +47,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
     iconChanged = false;
     favorite = 0;
     initStorage();
+    evaluate = 3;
   }
 
   initStorage() {
@@ -71,8 +72,8 @@ class _MustEatInsertState extends State<MustEatInsert> {
     Position position = await Geolocator.getCurrentPosition();
     currentPosition = position;
     canRun = true;
-    latController.text = currentPosition.latitude.toString().substring(0, 8);
-    longController.text = currentPosition.longitude.toString().substring(0, 8);
+    latController.text = currentPosition.latitude.toString().substring(0, 9);
+    longController.text = currentPosition.longitude.toString().substring(0, 9);
     setState(() {});
   }
 
@@ -186,23 +187,21 @@ class _MustEatInsertState extends State<MustEatInsert> {
                         height: 10,
                       ),
                       addBox(),
-                      Text('${evaluate}점'),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          RatingBar.builder(
-                            initialRating: 3,
-                            itemCount: 5,
-                            itemBuilder: (context, index) => Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                            ),
-                            onRatingUpdate: (rating) {
-                              debugPrint(rating.toString());
-                              evaluate = rating;
-                            },
-                          )
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: RatingBar.builder(
+                          initialRating: 3,
+                          itemCount: 5,
+                          itemBuilder: (context, index) => Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                          onRatingUpdate: (rating) {
+                            debugPrint(rating.toString());
+                            evaluate = rating;
+                            setState(() {});
+                          },
+                        ),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -239,11 +238,8 @@ class _MustEatInsertState extends State<MustEatInsert> {
                             backgroundColor:
                                 const Color.fromARGB(255, 7, 187, 169),
                           ),
-                          onPressed: () async{
-                            await uploadImage();
-                            insertJSONData();
-                            Get.back();
-                            // _showDialog();
+                          onPressed: () {
+                            _showDialog();
                           },
                           child: Text(
                             'Add',
@@ -297,41 +293,6 @@ class _MustEatInsertState extends State<MustEatInsert> {
         ),
       ),
     );
-  }
-
-  checkRating(int index) {
-    switch (index) {
-      case 0:
-        return const Icon(
-          Icons.sentiment_very_dissatisfied,
-          color: Colors.red,
-        );
-      case 1:
-        return const Icon(
-          Icons.sentiment_dissatisfied,
-          color: Colors.redAccent,
-        );
-      case 2:
-        return const Icon(
-          Icons.sentiment_neutral,
-          color: Colors.amber,
-        );
-      case 3:
-        return const Icon(
-          Icons.sentiment_satisfied,
-          color: Colors.lightGreen,
-        );
-      case 4:
-        return const Icon(
-          Icons.sentiment_very_satisfied,
-          color: Colors.green,
-        );
-      default:
-        return const Icon(
-          Icons.sentiment_satisfied,
-          color: Colors.lightGreen,
-        );
-    }
   }
 
   getImageFromGallery(ImageSource imageSource) async {
@@ -404,6 +365,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
               onPressed: () async {
                 await uploadImage();
                 insertJSONData();
+                Get.back();
                 Get.back();
               },
               child: Text('OK')),

@@ -70,13 +70,13 @@ async def insert(name: str=None, image: str=None, phone: str=None, long: str=Non
     
 # 이미지를 바꿨을때 수정하는 부분
 @router.get('/updateAll')
-async def insert(seq: str=None, name: str=None, image: str=None, phone: str=None, adddate: str=None, favorite: str=None, comment: str=None,  evaluate: str=None, user_id: str=None):
+async def insert(seq: str=None, name: str=None, image: str=None, phone: str=None, favorite: str=None, comment: str=None,  evaluate: str=None, user_id: str=None):
     conn = connection()
     curs= conn.cursor()
 
     try:
-        sql = "update addmusteat set name = %s, image = %s, phone = %s, adddate = %s, favorite = %s, comment = %s, evaluate = %s where seq = %s and user_id = %s"
-        curs.execute(sql, (name, image, phone, adddate, favorite, comment ,evaluate,  seq, user_id))
+        sql = "update addmusteat set name = %s, image = %s, phone = %s, favorite = %s, comment = %s, evaluate = %s where seq = %s and user_id = %s"
+        curs.execute(sql, (name, image, phone, favorite, comment ,evaluate,  seq, user_id))
         conn.commit()
         conn.close()
         return {'result' : 'OK'}
@@ -87,13 +87,13 @@ async def insert(seq: str=None, name: str=None, image: str=None, phone: str=None
     
 # 이미지를 바꾸지 않고 수정하는 부분
 @router.get('/update')
-async def insert(seq: int=None, name: str=None, phone: str=None, adddate: str=None, favorite: int=None, comment: str=None, evaluate: float=None, user_id: str=None):
+async def insert(seq: int=None, name: str=None, phone: str=None, favorite: int=None, comment: str=None, evaluate: float=None, user_id: str=None):
     conn = connection()
     curs= conn.cursor()
 
     try:
-        sql = "update addmusteat set name = %s, phone = %s, adddate = %s, favorite = %s, comment = %s, evaluate = %s where seq = %s and user_id = %s"
-        curs.execute(sql, (name, phone, adddate, favorite, comment, evaluate, seq, user_id))
+        sql = "update addmusteat set name = %s, phone = %s, favorite = %s, comment = %s, evaluate = %s where seq = %s and user_id = %s"
+        curs.execute(sql, (name, phone, favorite, comment, evaluate, seq, user_id))
         conn.commit()
         conn.close()
         return {'result' : 'OK'}
