@@ -92,7 +92,7 @@ async def delete_file(file_name: str):
         return {'results' : 'Error'}
 
 @router.get('/delete')
-async def delete(seq: str=None,):
+async def delete(seq: int=None):
     conn = connection()
     curs = conn.cursor()
 
@@ -104,7 +104,7 @@ async def delete(seq: str=None,):
         return {'results' : 'OK'}
     except Exception as e:
         conn.close()
-        print("Error :", e)
+        print("Error :" , e)
         return {'results': 'Error'}
     
     # Update favorite 추가
@@ -114,7 +114,7 @@ async def insert(seq: int=None, favorite: int=None, user_id: str=None):
     curs= conn.cursor()
     try:
         sql = "update addmusteat set favorite = %s where seq = %s and user_id = %s"
-        curs.execute(sql, (favorite, seq, user_id))
+        curs.execute(sql, (seq, favorite, user_id))
         conn.commit()
         conn.close()
         return {'results' : 'OK'}
