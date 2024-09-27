@@ -5,7 +5,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart' as latlng;
-import 'package:must_eat_place_app/vm/database_handler.dart';
 
 class MustEatLocation extends StatefulWidget {
   const MustEatLocation({super.key});
@@ -87,8 +86,7 @@ class _MustEatLocationState extends State<MustEatLocation> {
                         right: 0,
                         child: Column(
                           children: [
-                            Stack(alignment: Alignment.center,
-                              children: [
+                            Stack(alignment: Alignment.center, children: [
                               const Text(
                                 '⭐️',
                                 style: TextStyle(

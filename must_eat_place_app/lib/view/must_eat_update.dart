@@ -58,11 +58,20 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'MustEat',
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'images/Mask group.png',
+              width: 40,
+            ),
+            const Text(
+              'TasteTracker    ',
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
-        backgroundColor: const Color.fromARGB(255, 254, 221, 103),
+        backgroundColor: const Color(0xFFF1ECE6),
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(

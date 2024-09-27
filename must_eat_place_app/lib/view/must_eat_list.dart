@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:must_eat_place_app/view/login/login.dart';
 import 'package:must_eat_place_app/view/must_eat_insert.dart';
 import 'package:must_eat_place_app/view/must_eat_location.dart';
 import 'package:must_eat_place_app/view/must_eat_update.dart';
-import 'package:must_eat_place_app/vm/database_handler.dart';
 import 'package:http/http.dart' as http;
 
 class MustEatList extends StatefulWidget {
@@ -60,11 +60,18 @@ class _MustEatListState extends State<MustEatList> {
           },
         ),
         appBar: AppBar(
+          leading: IconButton(
+              onPressed: () {
+                Get.off(() => const Login());
+              },
+              icon: const Icon(Icons.logout_rounded)),
           backgroundColor: const Color(0xFFF1ECE6),
-          title: Row(mainAxisAlignment: MainAxisAlignment.center,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('images/Mask group.png',
-              width: 40,
+              Image.asset(
+                'images/Mask group.png',
+                width: 40,
               ),
               const Text(
                 'TasteTracker    ',
@@ -240,40 +247,44 @@ class _MustEatListState extends State<MustEatList> {
                                                   ],
                                                 ),
                                                 const Spacer(),
-                                                    Row(
-                                                      children: [
-                                                        // Icon(Icons.star_rate_rounded,
-                                                        // size: 25,
-                                                        // color: Color.fromARGB(255, 255, 236, 68),
-                                                        // ),
-                                                        // Text(
-                                                        //   '⭐️',
-                                                        //   style: const TextStyle(
-                                                        //     fontSize: 19,
-                                                        //     color: Colors.black,
-                                                        //   ),
-                                                        // ),
-                                                        Stack(
-                                                          alignment: Alignment.center,
-                                                          children: [
-                                                        const Text(
-                                                          '⭐️',
-                                                          style: TextStyle(
-                                                            fontSize: 38,
-                                                            color: Colors.black,
-                                                          ),
-                                                        ),                                                          
-                                                          Text(
-                                                            data[index][9].toString(),
-                                                            style: const TextStyle(
-                                                              fontSize: 11,
-                                                              color: Colors.black,
+                                                Row(
+                                                  children: [
+                                                    // Icon(Icons.star_rate_rounded,
+                                                    // size: 25,
+                                                    // color: Color.fromARGB(255, 255, 236, 68),
+                                                    // ),
+                                                    // Text(
+                                                    //   '⭐️',
+                                                    //   style: const TextStyle(
+                                                    //     fontSize: 19,
+                                                    //     color: Colors.black,
+                                                    //   ),
+                                                    // ),
+                                                    Stack(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        children: [
+                                                          const Text(
+                                                            '⭐️',
+                                                            style: TextStyle(
+                                                              fontSize: 38,
+                                                              color:
+                                                                  Colors.black,
                                                             ),
                                                           ),
-                                                      ]
-                                                        ),
-                                                      ],
-                                                    ),                                                   
+                                                          Text(
+                                                            data[index][9]
+                                                                .toString(),
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 11,
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                        ]),
+                                                  ],
+                                                ),
                                                 GestureDetector(
                                                   onTap: () {
                                                     isChange =
@@ -293,7 +304,7 @@ class _MustEatListState extends State<MustEatList> {
                                                         : const Icon(
                                                             Icons.favorite,
                                                             color: Colors.red,
-                                                            ),
+                                                          ),
                                                   ),
                                                 ),
                                                 Container(
