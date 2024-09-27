@@ -51,7 +51,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
           fit: BoxFit.cover,
           image: AssetImage('images/TasteTracker.png'), // 배경 이미지
@@ -64,7 +64,7 @@ class _LoginState extends State<Login> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 150,
                 ),
                 Padding(
@@ -164,7 +164,6 @@ class _LoginState extends State<Login> {
     var url = Uri.parse(
         'http://127.0.0.1:8000/login/checkuser?id=${userIdController.text}&password=${passwordController.text}');
     var response = await http.get(url);
-    print(response.body);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
     if (userIdController.text.trim().isEmpty ||
@@ -177,20 +176,6 @@ class _LoginState extends State<Login> {
       errorSnackBar();
     }
   }
-
-// checkUser() async {
-//     int result = await customerHandler.queryLoginCheck(
-//         userIdController.text.trim(), passwordController.text.trim());
-//     if (userIdController.text.trim().isEmpty ||
-//         passwordController.text.trim().isEmpty) {
-//       errorSnackBar();
-//     } else if (result == 1) {
-//       saveStorage();
-//       _showDialog();
-//     } else {
-//       errorSnackBar();
-//     }
-//   }
 
   errorSnackBar() {
     Get.snackbar('경고', 'ID랑 Password를 확인해 주세요',
@@ -205,15 +190,15 @@ class _LoginState extends State<Login> {
     Get.defaultDialog(
         title: 'Hey ${box.read('p_userID')}!',
         middleText: 'Welcome to TasteTracker',
-        middleTextStyle: TextStyle(fontSize: 17),
-        backgroundColor: Colors.white,
+        middleTextStyle: const TextStyle(fontSize: 17),
+        backgroundColor: const Color(0xFFF1ECE6),
         barrierDismissible: false,
         actions: [
           TextButton(
             onPressed: () {
               Get.back(); // 다이알로그를 없애고
               passwordController.text = '';
-              Get.to(
+              Get.off(
                 () => const MustEatList(),
               );
             },

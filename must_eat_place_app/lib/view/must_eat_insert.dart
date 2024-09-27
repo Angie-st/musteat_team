@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:must_eat_place_app/vm/database_handler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -18,7 +17,6 @@ class MustEatInsert extends StatefulWidget {
 }
 
 class _MustEatInsertState extends State<MustEatInsert> {
-  late DatabaseHandler handler;
   TextEditingController longController = TextEditingController();
   TextEditingController latController = TextEditingController();
   TextEditingController nameController = TextEditingController();
@@ -40,7 +38,6 @@ class _MustEatInsertState extends State<MustEatInsert> {
   @override
   void initState() {
     super.initState();
-    handler = DatabaseHandler();
     canRun = false;
     checkLocationPermission();
     getCurrentLocation();
@@ -81,11 +78,20 @@ class _MustEatInsertState extends State<MustEatInsert> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'MustEat',
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'images/Mask group.png',
+              width: 40,
+            ),
+            const Text(
+              'TasteTracker    ',
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
-        backgroundColor: Color.fromARGB(255, 254, 221, 103),
+        backgroundColor: const Color(0xFFF1ECE6),
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -94,7 +100,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                color: Color.fromARGB(255, 176, 193, 200),
+                color: const Color.fromARGB(255, 176, 193, 200),
                 width: MediaQuery.of(context).size.width, // 앱
                 height: 250,
                 child: Center(
@@ -140,13 +146,13 @@ class _MustEatInsertState extends State<MustEatInsert> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
+                          SizedBox(
                             width: 300,
                             child: TextField(
                               maxLength: 18,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                   counterText: "",
                                   contentPadding:
                                       EdgeInsets.symmetric(horizontal: 10),
@@ -169,21 +175,21 @@ class _MustEatInsertState extends State<MustEatInsert> {
                           ),
                         ],
                       ),
-                      Divider(
+                      const Divider(
                         thickness: 1,
                       ),
                       TextField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                             contentPadding:
                                 EdgeInsets.symmetric(horizontal: 10),
                             border: InputBorder.none,
                             hintText: 'Phone'),
                         controller: phoneController,
                       ),
-                      Divider(
+                      const Divider(
                         thickness: 1,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       addBox(),
@@ -192,7 +198,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
                         child: RatingBar.builder(
                           initialRating: 3,
                           itemCount: 5,
-                          itemBuilder: (context, index) => Icon(
+                          itemBuilder: (context, index) => const Icon(
                             Icons.star,
                             color: Colors.amber,
                           ),
@@ -206,17 +212,18 @@ class _MustEatInsertState extends State<MustEatInsert> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Location       '),
+                          const Text('Location       '),
                           SizedBox(
                             width: 95,
                             child: TextField(
                               controller: latController,
                               maxLength: 9,
                               keyboardType: TextInputType.number,
-                              decoration: InputDecoration(counterText: ""),
+                              decoration:
+                                  const InputDecoration(counterText: ""),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           SizedBox(
@@ -224,13 +231,14 @@ class _MustEatInsertState extends State<MustEatInsert> {
                             child: TextField(
                               controller: longController,
                               keyboardType: TextInputType.number,
-                              decoration: InputDecoration(counterText: ""),
+                              decoration:
+                                  const InputDecoration(counterText: ""),
                               maxLength: 10,
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       ElevatedButton(
@@ -241,7 +249,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
                           onPressed: () {
                             _showDialog();
                           },
-                          child: Text(
+                          child: const Text(
                             'Add',
                             style: TextStyle(
                                 color: Colors.white,
@@ -268,7 +276,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
         alignment: Alignment.centerLeft,
         child: Text(
           text,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         ),
       ),
     );
@@ -285,7 +293,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
         maxLength: 150,
         expands: true,
         maxLines: null,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           hintText: 'Restaurant Details',
           counterText: "",
           border: InputBorder.none,
@@ -299,7 +307,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
     final XFile? pickedFile = await picker.pickImage(source: imageSource);
     imageFile = XFile(pickedFile!.path);
     setState(() {});
-    print(imageFile!.path); // 이미지 경로 확인
+    //print(imageFile!.path); // 이미지 경로 확인
   }
 
   uploadImage() async {
@@ -312,14 +320,14 @@ class _MustEatInsertState extends State<MustEatInsert> {
     // for getting file name
     List preFileName = imageFile!.path.split('/');
     image = preFileName[preFileName.length - 1];
-    print('upload file name: $image');
+    //print('upload file name: $image');
 
     var response = await request.send();
 
     if (response.statusCode == 200) {
-      print("image uploaded successfully");
+      //  print("image uploaded successfully");
     } else {
-      print('image upload failed');
+      //  print('image upload failed');
     }
   }
 
@@ -331,9 +339,9 @@ class _MustEatInsertState extends State<MustEatInsert> {
     var dataCovertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataCovertedJSON['result'];
     if (result == 'OK') {
-      print('Success');
+      //  print('Success');
     } else {
-      print('Error');
+      //  print('Error');
     }
   }
 
@@ -349,7 +357,7 @@ class _MustEatInsertState extends State<MustEatInsert> {
             onPressed: () {
               Get.back();
             },
-            child: Text('Ok')),
+            child: const Text('Ok')),
         title: 'Error',
         middleText: 'Please complete the form',
       );
@@ -368,12 +376,12 @@ class _MustEatInsertState extends State<MustEatInsert> {
                 Get.back();
                 Get.back();
               },
-              child: Text('OK')),
+              child: const Text('OK')),
           TextButton(
               onPressed: () {
                 Get.back();
               },
-              child: Text('Cancel')),
+              child: const Text('Cancel')),
         ]);
   }
 } //End
