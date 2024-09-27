@@ -49,7 +49,7 @@ class _MustEatListState extends State<MustEatList> {
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Color.fromARGB(234, 106, 212, 218), // 버튼 배경 색상
+          backgroundColor: const Color.fromARGB(234, 106, 212, 218), // 버튼 배경 색상
           child: const Icon(
             Icons.add,
             color: Colors.white,
@@ -59,10 +59,17 @@ class _MustEatListState extends State<MustEatList> {
           },
         ),
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 254, 221, 103),
-          title: const Text(
-            'TasteTracker',
-            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          backgroundColor: const Color(0xFFF1ECE6),
+          title: Row(mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('images/Mask group.png',
+              width: 40,
+              ),
+              const Text(
+                'TasteTracker    ',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
           actions: [
             Padding(
@@ -107,7 +114,8 @@ class _MustEatListState extends State<MustEatList> {
                                 data[index][2], //image
                                 data[index][4], //long
                                 data[index][5], //lat
-                                data[index][10] //user_id
+                                data[index][10], //user_id,
+                                data[index][9] //evaluate,
                               ]),
                               child: Column(
                                 children: [
@@ -231,6 +239,40 @@ class _MustEatListState extends State<MustEatList> {
                                                   ],
                                                 ),
                                                 const Spacer(),
+                                                    Row(
+                                                      children: [
+                                                        // Icon(Icons.star_rate_rounded,
+                                                        // size: 25,
+                                                        // color: Color.fromARGB(255, 255, 236, 68),
+                                                        // ),
+                                                        // Text(
+                                                        //   '⭐️',
+                                                        //   style: const TextStyle(
+                                                        //     fontSize: 19,
+                                                        //     color: Colors.black,
+                                                        //   ),
+                                                        // ),
+                                                        Stack(
+                                                          alignment: Alignment.center,
+                                                          children: [
+                                                        const Text(
+                                                          '⭐️',
+                                                          style: TextStyle(
+                                                            fontSize: 38,
+                                                            color: Colors.black,
+                                                          ),
+                                                        ),                                                          
+                                                          Text(
+                                                            data[index][9].toString(),
+                                                            style: const TextStyle(
+                                                              fontSize: 11,
+                                                              color: Colors.black,
+                                                            ),
+                                                          ),
+                                                      ]
+                                                        ),
+                                                      ],
+                                                    ),                                                   
                                                 GestureDetector(
                                                   onTap: () {
                                                     isChange =
@@ -248,7 +290,9 @@ class _MustEatListState extends State<MustEatList> {
                                                         ? const Icon(Icons
                                                             .favorite_border)
                                                         : const Icon(
-                                                            Icons.favorite),
+                                                            Icons.favorite,
+                                                            color: Colors.red,
+                                                            ),
                                                   ),
                                                 ),
                                                 Container(
