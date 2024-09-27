@@ -42,8 +42,8 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
     super.initState();
     longControl = TextEditingController(text: value[4].toString());
     latControl = TextEditingController(text: value[5].toString());
-    print(value);
-    print(longControl.text);
+    // print(value);
+    // print(longControl.text);
     nameControl.text = value[1];
     phoneControl.text = value[3];
     commentControl.text = value[8];
@@ -71,7 +71,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               firstDisp == 0
-                  ? Container(
+                  ? SizedBox(
                       width: MediaQuery.of(context).size.width, // 앱
                       height: 250,
                       child: Center(
@@ -87,7 +87,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                             )),
                       ),
                     )
-                  : Container(
+                  : SizedBox(
                       width: MediaQuery.of(context).size.width, // 앱
                       height: 250,
                       child: Center(
@@ -115,7 +115,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
+                          SizedBox(
                             width: 300,
                             child: TextField(
                               maxLength: 18,
@@ -169,7 +169,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
                         child: RatingBar.builder(
                           initialRating: evaluate,
                           itemCount: 5,
-                          itemBuilder: (context, index) => Icon(
+                          itemBuilder: (context, index) => const Icon(
                             Icons.star,
                             color: Colors.amber,
                           ),
@@ -296,7 +296,7 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
 
   updateJSONData(date) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/update/update?seq=${value[0]}&name=${nameControl.text}&phone=${phoneControl.text}&adddate=${date.toString()}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
+        'http://127.0.0.1:8000/update/update?seq=${value[0]}&name=${nameControl.text}&phone=${phoneControl.text}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -318,9 +318,9 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
     final response = await http
         .delete(Uri.parse('http://127.0.0.1:8000/update/deleteFile/$filename'));
     if (response.statusCode == 200) {
-      print("Image deleted successfully");
+      // print("Image deleted successfully");
     } else {
-      print("image deletion failed.");
+      // print("image deletion failed.");
     }
   }
 
@@ -335,22 +335,22 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
     // for getting file name
     List preFileName = imageFile!.path.split('/');
     filename = preFileName[preFileName.length - 1];
-    print("upload file name : $filename");
+    // print("upload file name : $filename");
 
     var response = await request.send();
 
     // 200이면 정상적으로 들어간 것
     if (response.statusCode == 200) {
-      print("Image upload successfully");
+      // print("Image upload successfully");
     } else {
-      print("Image upload failed");
+      // print("Image upload failed");
     }
   }
 
   // Image를 선택후 업데이트
   updateJSONDataAll(date) async {
     var url = Uri.parse(
-        'http://127.0.0.1:8000/update/updateAll?seq=${value[0]}&name=${nameControl.text}&image=$filename&phone=${phoneControl.text}&adddate=${date.toString()}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
+        'http://127.0.0.1:8000/update/updateAll?seq=${value[0]}&name=${nameControl.text}&image=$filename&phone=${phoneControl.text}&favorite=$favorite&comment=${commentControl.text}&evaluate=$evaluate&user_id=${value[10]}');
     var response = await http.get(url);
     var dataConvertedJSON = json.decode(utf8.decode(response.bodyBytes));
     var result = dataConvertedJSON['result'];
@@ -362,11 +362,11 @@ class _MustEatUpdateState extends State<MustEatUpdate> {
   }
 
   _showDialog() {
-    print("Successfully!");
+    // print("Successfully!");
     Get.back();
   }
 
   errorSnackBar() {
-    print("Error");
+    // print("Error");
   }
 } //End
