@@ -15,7 +15,6 @@ class MustEatLocation extends StatefulWidget {
 }
 
 class _MustEatLocationState extends State<MustEatLocation> {
-  late DatabaseHandler handler;
   late Position currentPosition;
   late bool canRun;
   late String name;
@@ -25,17 +24,18 @@ class _MustEatLocationState extends State<MustEatLocation> {
   var value = Get.arguments ?? "__";
   late String image;
   late String address;
+  late double evaluate;
 
   @override
   void initState() {
     super.initState();
     canRun = false;
     mapController = MapController();
-    handler = DatabaseHandler();
     latData = value[3];
     longData = value[2];
     image = value[1];
     name = value[0];
+    evaluate = value[5];
     address = '';
     getCurrentLocation();
   }
@@ -60,10 +60,10 @@ class _MustEatLocationState extends State<MustEatLocation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 254, 221, 103),
-        title: const Text(
-          'MustEat',
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        backgroundColor: const Color(0xFFF1ECE6),
+        title: Text(
+          name,
+          style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
         ),
       ),
       body: canRun
@@ -87,21 +87,28 @@ class _MustEatLocationState extends State<MustEatLocation> {
                         right: 0,
                         child: Column(
                           children: [
-                            Text(
-                              name,
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                shadows: [
-                                  Shadow(
-                                    blurRadius: 5.0,
-                                    color: Colors.black,
-                                    offset: Offset(2.0, 2.0),
-                                  ),
-                                ],
+                            Stack(alignment: Alignment.center,
+                              children: [
+                              const Text(
+                                '⭐️',
+                                style: TextStyle(
+                                  fontSize: 50,
+                                  color: Colors.black,
+                                ),
                               ),
-                            ),
+                              Text(
+                                evaluate.toString(),
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ]),
                             Text(
                               address,
                               style: const TextStyle(
