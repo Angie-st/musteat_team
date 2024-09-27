@@ -220,9 +220,10 @@ class _UserSignInState extends State<UserSignIn> {
 
   _showDialog(String check_user_id, String welcome_user) {
     Get.defaultDialog(
-        title: check_user_id,
-        middleText: welcome_user,
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        title: 'Success',
+        middleText: 'Your account has been created'!,
+        middleTextStyle: const TextStyle(fontSize: 16),
+        backgroundColor: const Color(0xFFF1ECE6),
         barrierDismissible: false,
         actions: [
           TextButton(
@@ -235,7 +236,7 @@ class _UserSignInState extends State<UserSignIn> {
                 Get.back();
               }
             },
-            child: const Text('확인'),
+            child: const Text('OK'),
           )
         ]);
   }

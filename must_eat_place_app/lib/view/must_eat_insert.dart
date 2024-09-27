@@ -32,23 +32,19 @@ class _MustEatInsertState extends State<MustEatInsert> {
   String image = "";
   var now = DateTime.now();
   late double evaluate;
-  final box = GetStorage();
   late String userId;
+  var value = Get.arguments ?? '__';
 
   @override
   void initState() {
     super.initState();
     canRun = false;
+    userId = value;
     checkLocationPermission();
     getCurrentLocation();
     iconChanged = false;
     favorite = 0;
-    initStorage();
     evaluate = 3;
-  }
-
-  initStorage() {
-    userId = box.read('p_userID') ?? "";
   }
 
   checkLocationPermission() async {
@@ -305,9 +301,12 @@ class _MustEatInsertState extends State<MustEatInsert> {
 
   getImageFromGallery(ImageSource imageSource) async {
     final XFile? pickedFile = await picker.pickImage(source: imageSource);
-    imageFile = XFile(pickedFile!.path);
-    setState(() {});
-    //print(imageFile!.path); // 이미지 경로 확인
+    if (pickedFile == null) {
+      return;
+    } else {
+      imageFile = XFile(pickedFile.path);
+      setState(() {});
+    }
   }
 
   uploadImage() async {

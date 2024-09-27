@@ -28,6 +28,7 @@ class _MustEatListState extends State<MustEatList> {
 
   iniStorage() {
     userId = box.read('p_userID');
+    print(userId);
   }
 
   @override
@@ -56,7 +57,8 @@ class _MustEatListState extends State<MustEatList> {
             color: Colors.white,
           ),
           onPressed: () {
-            Get.to(() => const MustEatInsert())!.then((value) => getJSONData());
+            Get.to(() => const MustEatInsert(), arguments: userId)!
+                .then((value) => getJSONData());
           },
         ),
         appBar: AppBar(
